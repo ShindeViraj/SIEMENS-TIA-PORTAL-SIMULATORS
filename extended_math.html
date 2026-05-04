@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S7-1200 Extended Math Simulator | TIA Portal</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="logo" style="display: flex; align-items: center; gap: 15px;">
+            <img src="logo.png" alt="Squarewave Logo" onerror="this.style.display='none'">
+            <div>
+                <h1>TIA PORTAL SIMULATOR</h1>
+                <p>Squarewave Automation Technologies Pvt. Ltd.</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="nav-links">
+                <a href="index.html" class="nav-link inactive">⚡ Counters</a>
+                <a href="timers.html" class="nav-link inactive">⏱ Timers</a>
+                <a href="dataops.html" class="nav-link inactive">🧮 Math & Compare</a>
+                <a href="scale.html" class="nav-link inactive">🌡 Analog Scaling</a>
+                <a href="move.html" class="nav-link inactive">🔄 Move & Shift</a>
+                <a href="bitlogic.html" class="nav-link inactive">🔌 Bit Logic</a>
+                <a href="advmath.html" class="nav-link inactive">📈 Adv Math</a>
+                <a href="extended_math.html" class="nav-link active">✖ Ext Math</a>
+                <a href="float_math.html" class="nav-link inactive">📐 Float Math</a>
+                <a href="trig_math.html" class="nav-link inactive">📐 Trig Math</a>
+                <a href="expt_frac.html" class="nav-link inactive">?? Pwr & Frac</a>
+                <a href="serialization.html" class="nav-link inactive">?? Serialize</a>
+                <a href="adv_compare.html" class="nav-link inactive">?? Adv Compare</a>
+            </div>
+            <h2>S7-1200 Extended Math</h2>
+            <p style="font-size: 0.7rem; color: var(--text-muted);">by Antigravity</p>
+        </div>
+    </header>
+
+    <main>
+        <!-- MOD -->
+        <section class="module" id="mod-module">
+            <div class="module-header">
+                <h3>MOD (Return Remainder of Division)</h3>
+            </div>
+            <div class="instruction-description" style="padding: 10px 15px; background: rgba(0, 255, 204, 0.1); border-left: 4px solid var(--primary); margin-bottom: 15px; font-size: 0.9rem;">
+                <strong>Instruction Description:</strong> Returns the remainder of an integer division operation. The value at the IN1 input is divided by the value at the IN2 input and the remainder is returned at the OUT output.
+            </div>
+            <div class="module-content">
+                <div class="hmi-panel">
+                    <h4>HMI Panel</h4>
+                    <div class="controls">
+                        <div class="input-group">
+                            <label>IN1 Value (Dividend): <span id="mod-in1-val" class="analog-value">10</span></label>
+                            <input type="range" id="mod-in1" class="analog-slider" min="-100" max="100" value="10">
+                        </div>
+                        <div class="input-group">
+                            <label>IN2 Value (Divisor): <span id="mod-in2-val" class="analog-value">3</span></label>
+                            <input type="range" id="mod-in2" class="analog-slider" min="-100" max="100" value="3">
+                        </div>
+                    </div>
+                    
+                    <div class="displays" style="margin-top: 15px;">
+                        <div class="display-box">
+                            <span class="label">OUT (Remainder)</span>
+                            <div class="digital-display" id="mod-out" style="font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; text-align: right; background: #111; color: #00ffcc; padding: 10px; border-radius: 4px; border: 1px solid var(--border);">1</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="logic-diagram">
+                    <div class="network-title">Network 1: MOD Operation</div>
+                    <div class="ladder-network" style="height: 180px;">
+                        <div class="power-rail"></div>
+
+                        <div class="wire" style="left: 20px; top: 82px; width: 60px;"></div>
+                        
+                        <div class="instruction-box" style="left: 80px; top: 40px; height: 100px; width: 80px;">
+                            <div class="box-title">MOD</div>
+                            <div class="pin-label pin-left pin-y1">EN</div>
+                            <div class="pin-label pin-left pin-y2">IN1</div>
+                            <div class="pin-label pin-left pin-y3">IN2</div>
+                            <div class="pin-label pin-right pin-y1">ENO</div>
+                            <div class="pin-label pin-right pin-y2">OUT</div>
+                        </div>
+
+                        <div class="wire" style="left: 160px; top: 97px; width: 60px;"></div>
+                        <div class="tag-address" style="left: 230px; top: 85px;">%MD10</div>
+
+                        <div class="tag-address" style="left: 45px; top: 70px;">IN1</div>
+                        <div class="tag-address" style="left: 45px; top: 95px;">IN2</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- NEG & ABS -->
+        <section class="module" id="neg-abs-module">
+            <div class="module-header">
+                <h3>NEG (Twos Complement) & ABS (Absolute Value)</h3>
+            </div>
+            <div class="instruction-description" style="padding: 10px 15px; background: rgba(0, 255, 204, 0.1); border-left: 4px solid var(--primary); margin-bottom: 15px; font-size: 0.9rem;">
+                <strong>NEG Description:</strong> Inverts the arithmetic sign of the value at parameter IN and stores the result in parameter OUT.<br>
+                <strong>ABS Description:</strong> Calculates the absolute value of a signed integer or real number at parameter IN and stores the result in parameter OUT.
+            </div>
+            <div class="module-content">
+                <div class="hmi-panel">
+                    <h4>HMI Panel</h4>
+                    <div class="controls">
+                        <div class="input-group">
+                            <label>IN Value: <span id="neg-abs-in-val" class="analog-value">-50</span></label>
+                            <input type="range" id="neg-abs-in" class="analog-slider" min="-100" max="100" value="-50">
+                        </div>
+                    </div>
+                    
+                    <div class="displays" style="margin-top: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="display-box">
+                            <span class="label">NEG OUT</span>
+                            <div class="digital-display" id="neg-out" style="font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; text-align: right; background: #111; color: #ffaa00; padding: 10px; border-radius: 4px; border: 1px solid var(--border);">50</div>
+                        </div>
+                        <div class="display-box">
+                            <span class="label">ABS OUT</span>
+                            <div class="digital-display" id="abs-out" style="font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; text-align: right; background: #111; color: #ff00aa; padding: 10px; border-radius: 4px; border: 1px solid var(--border);">50</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="logic-diagram">
+                    <div class="network-title">Network 2: NEG & ABS Operations</div>
+                    <div class="ladder-network" style="height: 250px;">
+                        <div class="power-rail"></div>
+
+                        <!-- NEG Block -->
+                        <div class="wire" style="left: 20px; top: 72px; width: 60px;"></div>
+                        
+                        <div class="instruction-box" style="left: 80px; top: 40px; height: 80px; width: 80px;">
+                            <div class="box-title">NEG</div>
+                            <div class="pin-label pin-left pin-y1">EN</div>
+                            <div class="pin-label pin-left pin-y2">IN</div>
+                            <div class="pin-label pin-right pin-y1">ENO</div>
+                            <div class="pin-label pin-right pin-y2">OUT</div>
+                        </div>
+                        
+                        <div class="wire" style="left: 160px; top: 87px; width: 40px;"></div>
+                        <div class="tag-address" style="left: 210px; top: 75px;">%MD20</div>
+
+                        <div class="tag-address" style="left: 45px; top: 70px;">IN</div>
+
+                        <!-- ABS Block -->
+                        <div class="wire" style="left: 20px; top: 172px; width: 60px;"></div>
+                        
+                        <div class="instruction-box" style="left: 80px; top: 140px; height: 80px; width: 80px;">
+                            <div class="box-title">ABS</div>
+                            <div class="pin-label pin-left pin-y1">EN</div>
+                            <div class="pin-label pin-left pin-y2">IN</div>
+                            <div class="pin-label pin-right pin-y1">ENO</div>
+                            <div class="pin-label pin-right pin-y2">OUT</div>
+                        </div>
+                        
+                        <div class="wire" style="left: 160px; top: 187px; width: 40px;"></div>
+                        <div class="tag-address" style="left: 210px; top: 175px;">%MD24</div>
+
+                        <div class="tag-address" style="left: 45px; top: 170px;">IN</div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CALCULATE -->
+        <section class="module" id="calculate-module">
+            <div class="module-header">
+                <h3>CALCULATE (Math Equation)</h3>
+            </div>
+            <div class="instruction-description" style="padding: 10px 15px; background: rgba(0, 255, 204, 0.1); border-left: 4px solid var(--primary); margin-bottom: 15px; font-size: 0.9rem;">
+                <strong>Instruction Description:</strong> Creates a math function that operates on inputs (IN1, IN2, .. INn) and produces the result at OUT, according to the equation that you define.
+            </div>
+            <div class="module-content">
+                <div class="hmi-panel">
+                    <h4>HMI Panel</h4>
+                    <div class="controls">
+                        <div class="input-group">
+                            <label>Equation Expression (using IN1, IN2, IN3)</label>
+                            <input type="text" id="calc-expression" value="IN1 + (IN2 * IN3)" style="width: 100%; padding: 8px; margin-bottom: 15px; background: var(--bg-dark); color: var(--text-light); border: 1px solid var(--border); border-radius: 4px; font-family: monospace;">
+                        </div>
+                        <div class="input-group">
+                            <label>IN1 Value: <span id="calc-in1-val" class="analog-value">5</span></label>
+                            <input type="range" id="calc-in1" class="analog-slider" min="-50" max="50" value="5">
+                        </div>
+                        <div class="input-group">
+                            <label>IN2 Value: <span id="calc-in2-val" class="analog-value">10</span></label>
+                            <input type="range" id="calc-in2" class="analog-slider" min="-50" max="50" value="10">
+                        </div>
+                        <div class="input-group">
+                            <label>IN3 Value: <span id="calc-in3-val" class="analog-value">2</span></label>
+                            <input type="range" id="calc-in3" class="analog-slider" min="-50" max="50" value="2">
+                        </div>
+                    </div>
+                    
+                    <div class="displays" style="margin-top: 15px;">
+                        <div class="display-box">
+                            <span class="label">OUT Result</span>
+                            <div class="digital-display" id="calc-out" style="font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; text-align: right; background: #111; color: #ff00aa; padding: 10px; border-radius: 4px; border: 1px solid var(--border);">25</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="logic-diagram">
+                    <div class="network-title">Network 3: CALCULATE Block</div>
+                    <div class="ladder-network" style="height: 180px;">
+                        <div class="power-rail"></div>
+
+                        <div class="wire" style="left: 20px; top: 82px; width: 60px;"></div>
+                        
+                        <div class="instruction-box" style="left: 80px; top: 30px; height: 120px; width: 100px;">
+                            <div class="box-title">CALCULATE</div>
+                            <div class="pin-label pin-left pin-y1">EN</div>
+                            <div class="pin-label pin-left pin-y2">IN1</div>
+                            <div class="pin-label pin-left pin-y3">IN2</div>
+                            <div class="pin-label pin-left pin-y4">IN3</div>
+                            <div class="pin-label pin-right pin-y1">ENO</div>
+                            <div class="pin-label pin-right pin-y4">OUT</div>
+                        </div>
+
+                        <div class="wire" style="left: 180px; top: 122px; width: 60px;"></div>
+                        <div class="tag-address" style="left: 250px; top: 110px;">%MD30</div>
+
+                        <div class="tag-address" style="left: 45px; top: 60px;">IN1</div>
+                        <div class="tag-address" style="left: 45px; top: 85px;">IN2</div>
+                        <div class="tag-address" style="left: 45px; top: 110px;">IN3</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Siemens S7-1200 Instruction Simulator - Squarewave Automation Technologies</p>
+    </footer>
+
+    <script src="extended_math.js"></script>
+</body>
+</html>
+

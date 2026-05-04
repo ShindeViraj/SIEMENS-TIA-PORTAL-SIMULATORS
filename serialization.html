@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S7-1200 Serialize & Deserialize Simulator | TIA Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .json-input {
+            width: 100%;
+            height: 80px;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border: 1px solid var(--border);
+            font-family: 'JetBrains Mono', monospace;
+            padding: 10px;
+            border-radius: 4px;
+            resize: none;
+            font-size: 0.85rem;
+        }
+        .byte-array-display {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            text-align: left;
+            background: #111;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            min-height: 48px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .hex-byte-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #2a2a2a;
+            border-radius: 4px;
+            padding: 4px;
+            min-width: 32px;
+        }
+        .hex-val {
+            color: #ffaa00;
+            font-weight: bold;
+        }
+        .char-val {
+            color: #888;
+            font-size: 0.75rem;
+            margin-top: 2px;
+        }
+        .error-text {
+            color: #ff5555;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo" style="display: flex; align-items: center; gap: 15px;">
+            <img src="logo.png" alt="Squarewave Logo" onerror="this.style.display='none'">
+            <div>
+                <h1>TIA PORTAL SIMULATOR</h1>
+                <p>Squarewave Automation Technologies Pvt. Ltd.</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="nav-links">
+                <a href="index.html" class="nav-link inactive">⚡ Counters</a>
+                <a href="timers.html" class="nav-link inactive">⏱ Timers</a>
+                <a href="dataops.html" class="nav-link inactive">🧮 Math & Compare</a>
+                <a href="scale.html" class="nav-link inactive">🌡 Analog Scaling</a>
+                <a href="move.html" class="nav-link inactive">🔄 Move & Shift</a>
+                <a href="bitlogic.html" class="nav-link inactive">🔌 Bit Logic</a>
+                <a href="advmath.html" class="nav-link inactive">📈 Adv Math</a>
+                <a href="extended_math.html" class="nav-link inactive">✖ Ext Math</a>
+                <a href="float_math.html" class="nav-link inactive">📐 Float Math</a>
+                <a href="trig_math.html" class="nav-link inactive">📐 Trig Math</a>
+                <a href="expt_frac.html" class="nav-link inactive">📐 Pwr & Frac</a>
+                <a href="serialization.html" class="nav-link active">📦 Serialize</a>
+                <a href="adv_compare.html" class="nav-link inactive">?? Adv Compare</a>
+            </div>
+            <h2>S7-1200 Serialization</h2>
+            <p style="font-size: 0.7rem; color: var(--text-muted);">by Antigravity</p>
+        </div>
+    </header>
+
+    <main>
+        <!-- SERIALIZE -->
+        <section class="module" id="serialize-module">
+            <div class="module-header">
+                <h3>Serialize</h3>
+            </div>
+            <div class="instruction-description" style="padding: 10px 15px; background: rgba(0, 255, 204, 0.1); border-left: 4px solid var(--primary); margin-bottom: 15px; font-size: 0.9rem;">
+                <strong>Serialize Description:</strong> Converts a PLC data type (UDT) into a sequential byte array for transmission or storage.
+            </div>
+            <div class="module-content">
+                <div class="hmi-panel">
+                    <h4>HMI Panel</h4>
+                    <div class="controls">
+                        <div class="input-group">
+                            <label>SRC_VARIABLE (Simulated UDT via JSON):</label>
+                            <textarea id="ser-in-json" class="json-input">{
+  "temp": 45.2,
+  "active": true
+}</textarea>
+                            <div id="ser-error" class="error-text">Invalid JSON format</div>
+                        </div>
+                        <div class="input-group" style="margin-top: 15px;">
+                            <label>POS (Byte Index Offset): <span id="ser-pos-val" class="analog-value">0</span></label>
+                            <input type="range" id="ser-pos" class="analog-slider" min="0" max="10" step="1" value="0">
+                        </div>
+                    </div>
+                    
+                    <div class="displays" style="margin-top: 15px;">
+                        <div class="display-box">
+                            <span class="label">DEST_ARRAY (Byte Stream) & RET_VAL</span>
+                            <div class="digital-display" style="display: flex; justify-content: space-between; background: #111; border: 1px solid var(--border); padding: 5px 10px; margin-bottom: 10px;">
+                                <span style="color: #888; font-size: 0.9rem;">RET_VAL:</span>
+                                <span id="ser-ret-val" style="color: #00ffcc; font-family: 'JetBrains Mono', monospace;">0000 (No Error)</span>
+                            </div>
+                            <div class="byte-array-display" id="ser-out-array"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="logic-diagram">
+                    <div class="network-title">Network 1: Serialize Data</div>
+                    <div class="ladder-network" style="height: 200px;">
+                        <div class="power-rail"></div>
+
+                        <div class="wire" style="left: 20px; top: 87px; width: 60px;"></div>
+                        <div class="contact-symbol" style="left: 80px; top: 87px;">-| |-</div>
+                        <div class="tag-address" style="left: 85px; top: 60px;">Trigger</div>
+                        
+                        <div class="wire" style="left: 120px; top: 87px; width: 40px;"></div>
+                        
+                        <div class="instruction-box" style="left: 160px; top: 30px; height: 130px; width: 160px;">
+                            <div class="box-title">Serialize</div>
+                            <div class="pin-label pin-left pin-y1" style="top: 25px;">EN</div>
+                            <div class="pin-label pin-left pin-y2" style="top: 55px;">SRC_VAR</div>
+                            <div class="pin-label pin-left pin-y3" style="top: 85px;">DEST_ARR</div>
+                            <div class="pin-label pin-left pin-y4" style="top: 115px;">POS</div>
+                            
+                            <div class="pin-label pin-right pin-y1" style="top: 25px;">ENO</div>
+                            <div class="pin-label pin-right pin-y2" style="top: 55px;">RET_VAL</div>
+                        </div>
+                        
+                        <div class="wire" style="left: 320px; top: 87px; width: 40px;"></div>
+                        <div class="tag-address" style="left: 370px; top: 75px;">%MW100</div>
+
+                        <div class="tag-address" style="left: 120px; top: 80px;">#MyUDT</div>
+                        <div class="tag-address" style="left: 120px; top: 110px;">#Buffer</div>
+                        <div class="tag-address" style="left: 120px; top: 140px;">#Pos</div>
+                    </div>
+                </div>
+                <div class="explanation">
+                    <strong>How Serialize Works (S7-1200):</strong> The <code>Serialize</code> instruction is used to convert a complex PLC data structure into a flat, sequential array of raw bytes.
+                    <br><br>
+                    • <strong>UDT (User-Defined Data Type):</strong> A custom data structure containing variables of different types (e.g., Reals, Booleans, Integers). In this simulation, the UDT is represented by a JSON object.<br>
+                    • <strong>Buffer (Byte Array):</strong> The destination array where the raw byte stream is stored. This is often used to prepare data for transmission over a network (e.g., TCP/IP, Modbus) or for saving to an SD card.<br>
+                    • <strong>POS (Position):</strong> An offset pointer. It dictates the starting byte index within the buffer array where the serialized data will begin writing. The simulation demonstrates this by prepending empty bytes (∅) to shift the data sequence.
+                </div>
+            </div>
+        </section>
+
+        <!-- DESERIALIZE -->
+        <section class="module" id="deserialize-module">
+            <div class="module-header">
+                <h3>Deserialize</h3>
+            </div>
+            <div class="instruction-description" style="padding: 10px 15px; background: rgba(0, 255, 204, 0.1); border-left: 4px solid var(--primary); margin-bottom: 15px; font-size: 0.9rem;">
+                <strong>Deserialize Description:</strong> Converts a sequential byte array back into a structured PLC data type (UDT).
+            </div>
+            <div class="module-content">
+                <div class="hmi-panel">
+                    <h4>HMI Panel</h4>
+                    <div class="controls">
+                        <div class="input-group">
+                            <label>SRC_ARRAY (Byte Stream Input as Hex):</label>
+                            <input type="text" id="deser-in-hex" style="width: 100%; padding: 8px; background: #1e1e1e; color: #ffaa00; border: 1px solid var(--border); font-family: 'JetBrains Mono', monospace;" value="7B 22 74 65 6D 70 22 3A 34 35 2E 32 2C 22 61 63 74 69 76 65 22 3A 31 7D">
+                            <div id="deser-error" class="error-text">Invalid Hex String</div>
+                        </div>
+                        <div class="input-group" style="margin-top: 15px;">
+                            <label>POS (Byte Index Offset): <span id="deser-pos-val" class="analog-value">0</span></label>
+                            <input type="range" id="deser-pos" class="analog-slider" min="0" max="10" step="1" value="0">
+                        </div>
+                    </div>
+                    
+                    <div class="displays" style="margin-top: 15px;">
+                        <div class="display-box">
+                            <span class="label">DEST_VARIABLE (Deserialized UDT) & RET_VAL</span>
+                            <div class="digital-display" style="display: flex; justify-content: space-between; background: #111; border: 1px solid var(--border); padding: 5px 10px; margin-bottom: 10px;">
+                                <span style="color: #888; font-size: 0.9rem;">RET_VAL:</span>
+                                <span id="deser-ret-val" style="color: #00ffcc; font-family: 'JetBrains Mono', monospace;">0000 (No Error)</span>
+                            </div>
+                            <textarea readonly id="deser-out-json" class="json-input" style="height: 100px; background: #111; border-color: var(--primary);"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="logic-diagram">
+                    <div class="network-title">Network 2: Deserialize Data</div>
+                    <div class="ladder-network" style="height: 200px;">
+                        <div class="power-rail"></div>
+
+                        <div class="wire" style="left: 20px; top: 87px; width: 60px;"></div>
+                        <div class="contact-symbol" style="left: 80px; top: 87px;">-| |-</div>
+                        <div class="tag-address" style="left: 85px; top: 60px;">Trigger</div>
+                        
+                        <div class="wire" style="left: 120px; top: 87px; width: 40px;"></div>
+                        
+                        <div class="instruction-box" style="left: 160px; top: 30px; height: 130px; width: 160px;">
+                            <div class="box-title">Deserialize</div>
+                            <div class="pin-label pin-left pin-y1" style="top: 25px;">EN</div>
+                            <div class="pin-label pin-left pin-y2" style="top: 55px;">SRC_ARR</div>
+                            <div class="pin-label pin-left pin-y3" style="top: 85px;">DEST_VAR</div>
+                            <div class="pin-label pin-left pin-y4" style="top: 115px;">POS</div>
+                            
+                            <div class="pin-label pin-right pin-y1" style="top: 25px;">ENO</div>
+                            <div class="pin-label pin-right pin-y2" style="top: 55px;">RET_VAL</div>
+                        </div>
+                        
+                        <div class="wire" style="left: 320px; top: 87px; width: 40px;"></div>
+                        <div class="tag-address" style="left: 370px; top: 75px;">%MW102</div>
+
+                        <div class="tag-address" style="left: 120px; top: 80px;">#Buffer</div>
+                        <div class="tag-address" style="left: 120px; top: 110px;">#MyUDT</div>
+                        <div class="tag-address" style="left: 120px; top: 140px;">#Pos</div>
+                    </div>
+                </div>
+                <div class="explanation">
+                    <strong>How Deserialize Works (S7-1200):</strong> The <code>Deserialize</code> instruction performs the reverse operation. It takes a raw, flat array of bytes and reconstructs it back into a structured PLC Data Type (UDT).
+                    <br><br>
+                    • <strong>Byte Stream:</strong> The raw incoming data array containing hex values.<br>
+                    • <strong>UDT (User-Defined Data Type):</strong> The complex structured destination. The instruction reads the raw bytes and populates the structured fields of the UDT (simulated here as a JSON object).<br>
+                    • <strong>POS (Position):</strong> An offset pointer. It tells the PLC which byte index in the source array it should start reading from. If the first few bytes are headers, setting POS to skip them allows reading the actual data structure.
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Siemens S7-1200 Instruction Simulator - Squarewave Automation Technologies</p>
+    </footer>
+
+    <script src="serialization.js"></script>
+</body>
+</html>
+

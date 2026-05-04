@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S7-1200 Advanced Math Simulator | TIA Portal</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="logo" style="display: flex; align-items: center; gap: 15px;">
+            <img src="logo.png" alt="Squarewave Logo" onerror="this.style.display='none'">
+            <div>
+                <h1>TIA PORTAL SIMULATOR</h1>
+                <p>Squarewave Automation Technologies Pvt. Ltd.</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="nav-links">
+                <a href="index.html" class="nav-link inactive">⚡ Counters</a>
+                <a href="timers.html" class="nav-link inactive">⏱ Timers</a>
+                <a href="dataops.html" class="nav-link inactive">🧮 Math & Compare</a>
+                <a href="scale.html" class="nav-link inactive">🌡 Analog Scaling</a>
+                <a href="move.html" class="nav-link inactive">🔄 Move & Shift</a>
+                <a href="bitlogic.html" class="nav-link inactive">🔌 Bit Logic</a>
+                <a href="advmath.html" class="nav-link active">📈 Adv Math</a>
+                <a href="extended_math.html" class="nav-link inactive">✖ Ext Math</a>
+                <a href="float_math.html" class="nav-link inactive">📐 Float Math</a>
+                <a href="trig_math.html" class="nav-link inactive">📐 Trig Math</a>
+                <a href="expt_frac.html" class="nav-link inactive">?? Pwr & Frac</a>
+                <a href="serialization.html" class="nav-link inactive">?? Serialize</a>
+                <a href="adv_compare.html" class="nav-link inactive">?? Adv Compare</a>
+            </div>
+            <h2>S7-1200 Advanced Math</h2>
+            <p style="font-size: 0.7rem; color: var(--text-muted);">by Antigravity</p>
+        </div>
+    </header>
+
+    <main>
+        <!-- INC/DEC -->
+        <section class="module" id="incdec-module">
+            <div class="module-header">
+                <h3>Increment (INC) / Decrement (DEC)</h3>
+            </div>
+            <div class="instruction-description" style="padding: 10px 15px; background: rgba(0, 255, 204, 0.1); border-left: 4px solid var(--primary); margin-bottom: 15px; font-size: 0.9rem;">
+                <strong>Instruction Description:</strong> Increments or decrements a signed or unsigned integer number value (IN_OUT value + 1 or - 1).
+            </div>
+            <div class="module-content">
+                <div class="hmi-panel">
+                    <h4>HMI Panel</h4>
+                    <div class="controls">
+                        <div class="input-group">
+                            <label>Increment trigger</label>
+                            <button id="inc-btn" class="momentary-btn" onmousedown="this.classList.add('active'); triggerIncDec('INC')" onmouseup="this.classList.remove('active')" onmouseleave="this.classList.remove('active')">Push INC</button>
+                        </div>
+                        <div class="input-group">
+                            <label>Decrement trigger</label>
+                            <button id="dec-btn" class="momentary-btn" onmousedown="this.classList.add('active'); triggerIncDec('DEC')" onmouseup="this.classList.remove('active')" onmouseleave="this.classList.remove('active')">Push DEC</button>
+                        </div>
+                    </div>
+                    
+                    <div class="displays" style="margin-top: 15px;">
+                        <div class="display-box">
+                            <span class="label">IN_OUT Value (%MW10)</span>
+                            <div class="digital-display" id="incdec-val" style="font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; text-align: right; background: #111; color: #00ffcc; padding: 10px; border-radius: 4px; border: 1px solid var(--border);">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="logic-diagram">
+                    <div class="network-title">Network 1: INC / DEC Operations</div>
+                    <div class="ladder-network" style="height: 250px;">
+                        <div class="power-rail"></div>
+
+                        <!-- INC Block -->
+                        <div class="wire" style="left: 20px; top: 72px; width: 60px;"></div>
+                        <div class="contact-symbol" id="ladder-inc-contact" style="left: 80px; top: 72px;">-|P|-</div>
+                        
+                        <div class="wire" style="left: 120px; top: 72px; width: 40px;"></div>
+                        <div class="instruction-box" style="left: 160px; top: 40px; height: 80px; width: 80px;">
+                            <div class="box-title">INC</div>
+                            <div class="pin-label pin-right pin-y1" style="top:25px;">IN_OUT</div>
+                        </div>
+                        
+                        <div class="wire" style="left: 240px; top: 72px; width: 40px;"></div>
+                        <div class="tag-address" style="left: 250px; top: 50px;">%MW10</div>
+
+                        <!-- DEC Block -->
+                        <div class="wire" style="left: 20px; top: 172px; width: 60px;"></div>
+                        <div class="contact-symbol" id="ladder-dec-contact" style="left: 80px; top: 172px;">-|P|-</div>
+                        
+                        <div class="wire" style="left: 120px; top: 172px; width: 40px;"></div>
+                        <div class="instruction-box" style="left: 160px; top: 140px; height: 80px; width: 80px;">
+                            <div class="box-title">DEC</div>
+                            <div class="pin-label pin-right pin-y1" style="top:25px;">IN_OUT</div>
+                        </div>
+                        
+                        <div class="wire" style="left: 240px; top: 172px; width: 40px;"></div>
+                        <div class="tag-address" style="left: 250px; top: 150px;">%MW10</div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LIMIT -->
+        <section class="module" id="limit-module">
+            <div class="module-header">
+                <h3>LIMIT (Set Limit Value)</h3>
+            </div>
+            <div class="instruction-description" style="padding: 10px 15px; background: rgba(0, 255, 204, 0.1); border-left: 4px solid var(--primary); margin-bottom: 15px; font-size: 0.9rem;">
+                <strong>Instruction Description:</strong> Tests if the value of parameter IN is inside the value range specified by parameters MIN and MAX and if not, clamps the value at MIN or MAX.
+            </div>
+            <div class="module-content">
+                <div class="hmi-panel">
+                    <h4>HMI Panel</h4>
+                    <div class="controls">
+                        <div class="input-group">
+                            <label>MIN Limit: <span id="limit-min-val" class="analog-value">0</span></label>
+                            <input type="range" id="limit-min" class="analog-slider" min="-100" max="100" value="0">
+                        </div>
+                        <div class="input-group">
+                            <label>MAX Limit: <span id="limit-max-val" class="analog-value">100</span></label>
+                            <input type="range" id="limit-max" class="analog-slider" min="-100" max="100" value="100">
+                        </div>
+                        <div class="input-group" style="margin-top:15px; border-top: 1px solid #333; padding-top: 15px;">
+                            <label>IN Value: <span id="limit-in-val" class="analog-value">50</span></label>
+                            <input type="range" id="limit-in" class="analog-slider" min="-150" max="150" value="50">
+                        </div>
+                    </div>
+                    
+                    <div class="displays" style="margin-top: 15px;">
+                        <div class="display-box">
+                            <span class="label">OUT (Clamped)</span>
+                            <div class="digital-display" id="limit-out" style="font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; text-align: right; background: #111; color: #ffaa00; padding: 10px; border-radius: 4px; border: 1px solid var(--border);">50</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="logic-diagram">
+                    <div class="network-title">Network 2: LIMIT Operation</div>
+                    <div class="ladder-network" style="height: 180px;">
+                        <div class="power-rail"></div>
+
+                        <div class="wire" style="left: 20px; top: 82px; width: 60px;"></div>
+                        
+                        <div class="instruction-box" style="left: 80px; top: 40px; height: 120px; width: 100px;">
+                            <div class="box-title">LIMIT</div>
+                            <div class="pin-label pin-left pin-y1">EN</div>
+                            <div class="pin-label pin-left pin-y2">MIN</div>
+                            <div class="pin-label pin-left pin-y3">IN</div>
+                            <div class="pin-label pin-left pin-y4">MAX</div>
+                            <div class="pin-label pin-right pin-y1">ENO</div>
+                            <div class="pin-label pin-right pin-y3">OUT</div>
+                        </div>
+
+                        <div class="wire" style="left: 180px; top: 122px; width: 60px;"></div>
+                        <div class="tag-address" style="left: 250px; top: 110px;">%MD30</div>
+
+                        <div class="tag-address" style="left: 45px; top: 70px;">MIN</div>
+                        <div class="tag-address" style="left: 45px; top: 95px;">IN</div>
+                        <div class="tag-address" style="left: 45px; top: 120px;">MAX</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MIN / MAX -->
+        <section class="module" id="minmax-module">
+            <div class="module-header">
+                <h3>MIN / MAX Selector</h3>
+            </div>
+            <div class="instruction-description" style="padding: 10px 15px; background: rgba(0, 255, 204, 0.1); border-left: 4px solid var(--primary); margin-bottom: 15px; font-size: 0.9rem;">
+                <strong>Instruction Description:</strong> Compares the value of two parameters IN1 and IN2 and assigns the minimum (lesser) or maximum (greater) value to parameter OUT.
+            </div>
+            <div class="module-content">
+                <div class="hmi-panel">
+                    <h4>HMI Panel</h4>
+                    <div class="controls">
+                        <div class="input-group">
+                            <label>Operation</label>
+                            <select id="minmax-op" style="width: 100%; padding: 8px; margin-bottom: 15px; background: var(--bg-dark); color: var(--text-light); border: 1px solid var(--border); border-radius: 4px;">
+                                <option value="MIN">MIN (Minimum)</option>
+                                <option value="MAX">MAX (Maximum)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>IN1 Value: <span id="minmax-in1-val" class="analog-value">0</span></label>
+                            <input type="range" id="minmax-in1" class="analog-slider" min="-100" max="100" value="0">
+                        </div>
+                        <div class="input-group">
+                            <label>IN2 Value: <span id="minmax-in2-val" class="analog-value">0</span></label>
+                            <input type="range" id="minmax-in2" class="analog-slider" min="-100" max="100" value="0">
+                        </div>
+                    </div>
+                    
+                    <div class="displays" style="margin-top: 15px;">
+                        <div class="display-box">
+                            <span class="label">OUT Result</span>
+                            <div class="digital-display" id="minmax-out" style="font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; text-align: right; background: #111; color: #ff00aa; padding: 10px; border-radius: 4px; border: 1px solid var(--border);">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="logic-diagram">
+                    <div class="network-title">Network 3: MIN/MAX Selection</div>
+                    <div class="ladder-network" style="height: 180px;">
+                        <div class="power-rail"></div>
+
+                        <div class="wire" style="left: 20px; top: 82px; width: 60px;"></div>
+                        
+                        <div class="instruction-box" style="left: 80px; top: 40px; height: 100px; width: 80px;">
+                            <div class="box-title" id="ladder-minmax-title">MIN</div>
+                            <div class="pin-label pin-left pin-y1">EN</div>
+                            <div class="pin-label pin-left pin-y2">IN1</div>
+                            <div class="pin-label pin-left pin-y3">IN2</div>
+                            <div class="pin-label pin-right pin-y1">ENO</div>
+                            <div class="pin-label pin-right pin-y2">OUT</div>
+                        </div>
+
+                        <div class="wire" style="left: 160px; top: 97px; width: 60px;"></div>
+                        <div class="tag-address" style="left: 230px; top: 85px;">%MD40</div>
+
+                        <div class="tag-address" style="left: 45px; top: 70px;">IN1</div>
+                        <div class="tag-address" style="left: 45px; top: 95px;">IN2</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Siemens S7-1200 Instruction Simulator - Squarewave Automation Technologies</p>
+    </footer>
+
+    <script src="advmath.js"></script>
+</body>
+</html>
+

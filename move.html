@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S7-1200 Move & Shift Simulator | TIA Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .binary-display {
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 2px;
+            font-size: 1.2rem;
+            color: #00ffcc;
+            background: #111;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+        .digital-display {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            color: #fff;
+            background: #111;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            text-align: right;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo" style="display: flex; align-items: center; gap: 15px;">
+            <img src="logo.png" alt="Squarewave Logo" onerror="this.style.display='none'">
+            <div>
+                <h1>TIA PORTAL SIMULATOR</h1>
+                <p>Squarewave Automation Technologies Pvt. Ltd.</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="nav-links">
+                <a href="index.html" class="nav-link inactive">⚡ Counters</a>
+                <a href="timers.html" class="nav-link inactive">⏱ Timers</a>
+                <a href="dataops.html" class="nav-link inactive">🧮 Math & Compare</a>
+                <a href="scale.html" class="nav-link inactive">🌡 Analog Scaling</a>
+                <a href="move.html" class="nav-link active">🔄 Move & Shift</a>
+                <a href="bitlogic.html" class="nav-link inactive">🔌 Bit Logic</a>
+                <a href="advmath.html" class="nav-link inactive">📈 Adv Math</a>
+                <a href="extended_math.html" class="nav-link inactive">✖ Ext Math</a>
+                <a href="float_math.html" class="nav-link inactive">📐 Float Math</a>
+                <a href="trig_math.html" class="nav-link inactive">📐 Trig Math</a>
+                <a href="expt_frac.html" class="nav-link inactive">?? Pwr & Frac</a>
+                <a href="serialization.html" class="nav-link inactive">?? Serialize</a>
+                <a href="adv_compare.html" class="nav-link inactive">?? Adv Compare</a>
+            </div>
+            <h2>S7-1200 Move & Shift</h2>
+            <p style="font-size: 0.7rem; color: var(--text-muted);">by Antigravity</p>
+        </div>
+    </header>
+
+    <main>
+        <section class="module" id="move-module">
+            <div class="module-header">
+                <h3>MOVE Instruction</h3>
+            </div>
+            <div class="instruction-description" style="padding: 10px 15px; background: rgba(0, 255, 204, 0.1); border-left: 4px solid var(--primary); margin-bottom: 15px; font-size: 0.9rem;">
+                <strong>Instruction Description:</strong> Moves the contents of an input to an output without modifying the original value.
+            </div>
+            <div class="module-content">
+                <div class="hmi-panel">
+                    <h4>HMI Panel</h4>
+                    <div class="controls">
+                        <div class="input-group">
+                            <label>EN (Enable)</label>
+                            <button id="move-en" class="momentary-btn">OFF</button>
+                        </div>
+                        <div class="input-group">
+                            <label>IN Value</label>
+                            <input type="number" id="move-in" value="42">
+                        </div>
+                    </div>
+                    
+                    <div class="displays" style="margin-top: 15px;">
+                        <div class="display-box">
+                            <span class="label">OUT1 (%MW10)</span>
+                            <div class="digital-display" id="move-out">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="logic-diagram">
+                    <div class="network-title">Network 1: MOVE Data</div>
+                    <div class="ladder-network" style="height: 150px;">
+                        <div class="power-rail"></div>
+
+                        <div class="wire" style="left: 20px; top: 72px; width: 40px;"></div>
+                        <div class="contact-symbol" id="ladder-move-en" style="left: 60px; top: 72px;">-| |-</div>
+                        <div class="tag-address" style="left: 65px; top: 40px;">EN</div>
+                        
+                        <div class="wire" style="left: 100px; top: 72px; width: 60px;"></div>
+                        
+                        <div class="instruction-box" style="left: 160px; top: 40px; height: 90px; width: 80px;">
+                            <div class="box-title">MOVE</div>
+                            <div class="pin-label pin-left pin-y1">EN</div>
+                            <div class="pin-label pin-left pin-y2">IN</div>
+                            <div class="pin-label pin-right pin-y1">ENO</div>
+                            <div class="pin-label pin-right pin-y2">OUT1</div>
+                        </div>
+
+                        <div class="wire" style="left: 240px; top: 72px; width: 40px;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="module" id="shift-module">
+            <div class="module-header">
+                <h3>SHL & SHR Instructions (Word)</h3>
+            </div>
+            <div class="instruction-description" style="padding: 10px 15px; background: rgba(0, 255, 204, 0.1); border-left: 4px solid var(--primary); margin-bottom: 15px; font-size: 0.9rem;">
+                <strong>Instruction Description:</strong> Shifts the contents of a parameter bit by bit to the left (SHL) or to the right (SHR).
+            </div>
+            <div class="module-content">
+                <div class="hmi-panel">
+                    <h4>HMI Panel</h4>
+                    <div class="controls">
+                        <div class="input-group">
+                            <label>Operation</label>
+                            <select id="shift-op">
+                                <option value="SHL">Shift Left (SHL)</option>
+                                <option value="SHR">Shift Right (SHR)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>IN (16-bit Word)</label>
+                            <input type="number" id="shift-in" value="1" min="0" max="65535">
+                        </div>
+                        <div class="input-group">
+                            <label>N (Bits to Shift)</label>
+                            <input type="number" id="shift-n" value="1" min="0" max="15">
+                        </div>
+                    </div>
+                    
+                    <div class="displays" style="margin-top: 15px;">
+                        <div class="display-box">
+                            <span class="label">IN (Binary)</span>
+                            <div class="binary-display" id="shift-in-bin">0000000000000001</div>
+                        </div>
+                        <div class="display-box" style="margin-top:10px;">
+                            <span class="label">OUT (Binary)</span>
+                            <div class="binary-display" id="shift-out-bin">0000000000000010</div>
+                        </div>
+                        <div class="display-box" style="margin-top:10px;">
+                            <span class="label">OUT (Decimal)</span>
+                            <div class="digital-display" id="shift-out-dec" style="color:#00ffcc;">2</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="logic-diagram">
+                    <div class="network-title">Network 2: Shift Operations</div>
+                    <div class="ladder-network" style="height: 150px;">
+                        <div class="power-rail"></div>
+
+                        <div class="wire" style="left: 20px; top: 72px; width: 80px;"></div>
+                        <div class="tag-address" style="left: 50px; top: 40px;">Always ON</div>
+                        
+                        <div class="instruction-box" style="left: 100px; top: 40px; height: 100px; width: 80px;">
+                            <div class="box-title" id="ladder-shift-title">SHL</div>
+                            <div class="pin-label pin-left pin-y1">EN</div>
+                            <div class="pin-label pin-left pin-y2">IN</div>
+                            <div class="pin-label pin-left pin-y3">N</div>
+                            <div class="pin-label pin-right pin-y1">ENO</div>
+                            <div class="pin-label pin-right pin-y3">OUT</div>
+                        </div>
+
+                        <div class="wire" style="left: 180px; top: 72px; width: 60px;"></div>
+                        
+                        <div class="wire" style="left: 180px; top: 112px; width: 40px;"></div>
+                        <div class="tag-address" style="left: 190px; top: 92px;">%MW20</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Siemens S7-1200 Instruction Simulator - Squarewave Automation Technologies</p>
+    </footer>
+
+    <script src="move.js"></script>
+</body>
+</html>
+

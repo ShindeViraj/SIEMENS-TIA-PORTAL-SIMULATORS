@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S7-1200 Advanced Compare Simulator | TIA Portal</title>
+    <meta name="description" content="Interactive Siemens S7-1200 PLC Advanced Compare Operations simulator featuring OUT_RANGE, OK/NOT_OK, and Variant checks.">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .analog-slider {
+            width: 100%;
+            margin-top: 5px;
+            margin-bottom: 15px;
+        }
+        .analog-value {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent);
+            font-weight: bold;
+        }
+        .digital-display {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            color: #fff;
+            background: #111;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            text-align: right;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+        }
+        .digital-display.active-led {
+            color: var(--accent);
+            text-shadow: 0 0 10px var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo" style="display: flex; align-items: center; gap: 15px;">
+            <img src="logo.png" alt="Squarewave Logo" onerror="this.style.display='none'">
+            <div>
+                <h1>TIA PORTAL SIMULATOR</h1>
+                <p>Squarewave Automation Technologies Pvt. Ltd.</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="nav-links">
+                <a href="index.html" class="nav-link inactive">⚡ Counters</a>
+                <a href="timers.html" class="nav-link inactive">⏱ Timers</a>
+                <a href="dataops.html" class="nav-link inactive">🧮 Math & Compare</a>
+                <a href="scale.html" class="nav-link inactive">🌡 Analog Scaling</a>
+                <a href="move.html" class="nav-link inactive">🔄 Move & Shift</a>
+                <a href="bitlogic.html" class="nav-link inactive">🔌 Bit Logic</a>
+                <a href="advmath.html" class="nav-link inactive">📈 Adv Math</a>
+                <a href="extended_math.html" class="nav-link inactive">✖ Ext Math</a>
+                <a href="float_math.html" class="nav-link inactive">📐 Float Math</a>
+                <a href="trig_math.html" class="nav-link inactive">📐 Trig Math</a>
+                <a href="expt_frac.html" class="nav-link inactive">📐 Pwr & Frac</a>
+                <a href="serialization.html" class="nav-link inactive">📦 Serialize</a>
+                <a href="adv_compare.html" class="nav-link active">🔍 Adv Compare</a>
+            </div>
+            <h2>S7-1200 Advanced Compare</h2>
+            <p style="font-size: 0.7rem; color: var(--text-muted);">by Antigravity</p>
+        </div>
+    </header>
+
+    <main>
+        <!-- OUT_RANGE Section -->
+        <section class="module" id="outrange-module">
+            <div class="module-header">
+                <h3>OUT_RANGE (Value outside range)</h3>
+            </div>
+            <div class="instruction-description" style="padding: 10px 15px; background: rgba(0, 255, 204, 0.1); border-left: 4px solid var(--primary); margin-bottom: 15px; font-size: 0.9rem;">
+                <strong>Instruction Description:</strong> Tests whether an input value is outside of a specified value range. If VAL < MIN or VAL > MAX, the output is TRUE.
+            </div>
+            
+            <div class="module-content">
+                <div class="hmi-panel">
+                    <h4>HMI Panel</h4>
+                    <div class="controls">
+                        <div class="input-group">
+                            <label>Sensor Value (VAL): <span id="outrange-val-display" class="analog-value">0</span></label>
+                            <input type="range" id="outrange-val" class="analog-slider" min="0" max="100" value="0">
+                        </div>
+                        <div style="display:flex; gap:10px;">
+                            <div class="input-group" style="flex:1;">
+                                <label>MIN Limit</label>
+                                <input type="number" id="outrange-min" value="20" style="width:100%">
+                            </div>
+                            <div class="input-group" style="flex:1;">
+                                <label>MAX Limit</label>
+                                <input type="number" id="outrange-max" value="80" style="width:100%">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="displays" style="margin-top: 15px;">
+                        <div class="display-box">
+                            <span class="label">OUT_RANGE Output (%Q0.0)</span>
+                            <div class="led" id="outrange-led"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="logic-diagram">
+                    <div class="network-title">Network 1: OUT_RANGE</div>
+                    <div class="ladder-network" style="height: 180px;">
+                        <div class="power-rail"></div>
+
+                        <div class="wire" style="left: 20px; top: 112px; width: 80px;"></div>
+                        <div class="tag-address" style="left: 50px; top: 80px;">EN</div>
+                        
+                        <div class="instruction-box" style="left: 100px; top: 70px; width: 90px; height: 100px;">
+                            <div class="box-title" style="font-size:10px;">OUT_RANGE</div>
+                            <div class="pin-label pin-left pin-y1">MIN</div>
+                            <div class="pin-label pin-left pin-y2">VAL</div>
+                            <div class="pin-label pin-left pin-y3">MAX</div>
+                        </div>
+
+                        <div class="wire" style="left: 190px; top: 112px; width: 70px;"></div>
+                        <div class="tag-address" style="left: 210px; top: 80px;">%Q0.0</div>
+                        <div class="contact-symbol" id="ladder-outrange-coil" style="left: 210px; top: 112px;">--( )--</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Explanation Box for OUT_RANGE -->
+            <div class="explanation" style="margin-top: 15px; border-top: 1px solid var(--border); padding-top: 15px;">
+                <strong>How it Works:</strong>
+                <ul style="margin-top: 5px; padding-left: 20px; font-size: 0.9rem; color: var(--text-light);">
+                    <li><strong>Logic:</strong> The output turns <code>TRUE</code> only when the input VAL is <em>strictly less than</em> MIN or <em>strictly greater than</em> MAX.</li>
+                    <li><strong>Application:</strong> Useful for triggering alarms when a process variable (like temperature or pressure) deviates outside a safe operating window.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- OK / NOT_OK Section -->
+        <section class="module" id="validity-module">
+            <div class="module-header">
+                <h3>OK / NOT_OK (Validity Check)</h3>
+            </div>
+            <div class="instruction-description" style="padding: 10px 15px; background: rgba(0, 255, 204, 0.1); border-left: 4px solid var(--primary); margin-bottom: 15px; font-size: 0.9rem;">
+                <strong>Instruction Description:</strong> Tests whether an input data reference is a valid real number (IEEE 754). It is invalid if it is NaN (Not a Number), +/- Infinity, or denormalized.
+            </div>
+            
+            <div class="module-content">
+                <div class="hmi-panel">
+                    <h4>HMI Panel</h4>
+                    <div class="controls">
+                        <div class="input-group">
+                            <label>Real Number Input (IN)</label>
+                            <select id="validity-input" style="width: 100%; padding: 8px; margin-bottom: 15px; background: var(--bg-dark); color: var(--text-light); border: 1px solid var(--border); border-radius: 4px;">
+                                <option value="123.45">123.45 (Valid Real)</option>
+                                <option value="0.0">0.0 (Valid Real)</option>
+                                <option value="-999.99">-999.99 (Valid Real)</option>
+                                <option value="NaN">NaN (Not a Number)</option>
+                                <option value="Infinity">+Infinity</option>
+                                <option value="-Infinity">-Infinity</option>
+                                <option value="denormalized">Denormalized Value</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="displays">
+                        <div class="display-box">
+                            <span class="label">OK Output (%Q0.1)</span>
+                            <div class="led" id="ok-led"></div>
+                        </div>
+                        <div class="display-box">
+                            <span class="label">NOT_OK Output (%Q0.2)</span>
+                            <div class="led" id="notok-led"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="logic-diagram">
+                    <div class="network-title">Network 2: Validity Checks</div>
+                    <div class="ladder-network" style="height: 180px;">
+                        <div class="power-rail"></div>
+
+                        <!-- OK instruction -->
+                        <div class="wire" style="left: 20px; top: 72px; width: 60px;"></div>
+                        <div class="instruction-box" style="left: 80px; top: 40px; width: 70px; height: 60px;">
+                            <div class="box-title">OK</div>
+                            <div class="pin-label pin-left pin-y1">IN</div>
+                        </div>
+                        <div class="wire" style="left: 150px; top: 72px; width: 70px;"></div>
+                        <div class="tag-address" style="left: 170px; top: 40px;">%Q0.1</div>
+                        <div class="contact-symbol" id="ladder-ok-coil" style="left: 170px; top: 72px;">--( )--</div>
+
+                        <!-- NOT_OK instruction -->
+                        <div class="wire" style="left: 20px; top: 152px; width: 60px;"></div>
+                        <div class="instruction-box" style="left: 80px; top: 120px; width: 70px; height: 60px;">
+                            <div class="box-title">NOT_OK</div>
+                            <div class="pin-label pin-left pin-y1">IN</div>
+                        </div>
+                        <div class="wire" style="left: 150px; top: 152px; width: 70px;"></div>
+                        <div class="tag-address" style="left: 170px; top: 120px;">%Q0.2</div>
+                        <div class="contact-symbol" id="ladder-notok-coil" style="left: 170px; top: 152px;">--( )--</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Explanation Box for OK/NOT_OK -->
+            <div class="explanation" style="margin-top: 15px; border-top: 1px solid var(--border); padding-top: 15px;">
+                <strong>How it Works:</strong>
+                <ul style="margin-top: 5px; padding-left: 20px; font-size: 0.9rem; color: var(--text-light);">
+                    <li><strong>NaN (Not a Number):</strong> Results from undefined operations like <code>0.0 / 0.0</code> or the square root of a negative number.</li>
+                    <li><strong>Infinity:</strong> Results from operations like dividing a non-zero number by zero.</li>
+                    <li><strong>Denormalized:</strong> Very small numbers close to zero that exceed standard floating-point precision bounds. The CPU treats these as zero in calculation.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Variant & Array Check Section -->
+        <section class="module" id="variant-module">
+            <div class="module-header">
+                <h3>Null / Array Check (IS_NULL, IS_ARRAY)</h3>
+            </div>
+            <div class="instruction-description" style="padding: 10px 15px; background: rgba(0, 255, 204, 0.1); border-left: 4px solid var(--primary); margin-bottom: 15px; font-size: 0.9rem;">
+                <strong>Instruction Description:</strong> IS_NULL determines if a Variant pointer actually points to an object or is null. IS_ARRAY queries if the Variant points to an Array data type.
+            </div>
+            
+            <div class="module-content">
+                <div class="hmi-panel">
+                    <h4>HMI Panel</h4>
+                    <div class="controls">
+                        <div class="input-group">
+                            <label>Variant Pointer Assignment</label>
+                            <select id="variant-input" style="width: 100%; padding: 8px; margin-bottom: 15px; background: var(--bg-dark); color: var(--text-light); border: 1px solid var(--border); border-radius: 4px;">
+                                <option value="null">NULL (Unassigned Pointer)</option>
+                                <option value="int">Points to INT (Standard Tag)</option>
+                                <option value="array">Points to ARRAY[0..9] OF INT</option>
+                                <option value="udt">Points to UDT (Data Structure)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="displays">
+                        <div class="display-box">
+                            <span class="label">IS_NULL Output</span>
+                            <div class="led" id="isnull-led"></div>
+                        </div>
+                        <div class="display-box">
+                            <span class="label">IS_ARRAY Output</span>
+                            <div class="led" id="isarray-led"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="logic-diagram">
+                    <div class="network-title">Network 3: Variant Operations</div>
+                    <div class="ladder-network" style="height: 180px;">
+                        <div class="power-rail"></div>
+
+                        <!-- IS_NULL -->
+                        <div class="wire" style="left: 20px; top: 72px; width: 60px;"></div>
+                        <div class="instruction-box" style="left: 80px; top: 40px; width: 80px; height: 60px;">
+                            <div class="box-title">IS_NULL</div>
+                            <div class="pin-label pin-left pin-y1">Variant</div>
+                        </div>
+                        <div class="wire" style="left: 160px; top: 72px; width: 60px;"></div>
+                        <div class="contact-symbol" id="ladder-isnull-coil" style="left: 180px; top: 72px;">--( )--</div>
+
+                        <!-- IS_ARRAY -->
+                        <div class="wire" style="left: 20px; top: 152px; width: 60px;"></div>
+                        <div class="instruction-box" style="left: 80px; top: 120px; width: 80px; height: 60px;">
+                            <div class="box-title">IS_ARRAY</div>
+                            <div class="pin-label pin-left pin-y1">Variant</div>
+                        </div>
+                        <div class="wire" style="left: 160px; top: 152px; width: 60px;"></div>
+                        <div class="contact-symbol" id="ladder-isarray-coil" style="left: 180px; top: 152px;">--( )--</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>Siemens S7-1200 Instruction Simulator - Squarewave Automation Technologies</p>
+    </footer>
+
+    <script src="adv_compare.js"></script>
+</body>
+</html>

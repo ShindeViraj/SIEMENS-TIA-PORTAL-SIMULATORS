@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Siemens S7-1200 Counter Simulator | TIA Portal</title>
+    <meta name="description" content="Interactive Siemens S7-1200 PLC counter simulator featuring CTU, CTD, and CTUD instructions with real-time timing diagrams and ladder logic visualization.">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <div class="logo" style="display: flex; align-items: center; gap: 15px;">
+            <img src="logo.png" alt="Squarewave Logo" onerror="this.style.display='none'">
+            <div>
+                <h1>TIA PORTAL SIMULATOR</h1>
+                <p>Squarewave Automation Technologies Pvt. Ltd.</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="nav-links">
+                <a href="index.html" class="nav-link active">⚡ Counters</a>
+                <a href="timers.html" class="nav-link inactive">⏱ Timers</a>
+                <a href="dataops.html" class="nav-link inactive">🧮 Math & Compare</a>
+                <a href="scale.html" class="nav-link inactive">🌡 Analog Scaling</a>
+                <a href="move.html" class="nav-link inactive">🔄 Move & Shift</a>
+                <a href="bitlogic.html" class="nav-link inactive">🔌 Bit Logic</a>
+                <a href="advmath.html" class="nav-link inactive">📈 Adv Math</a>
+                <a href="extended_math.html" class="nav-link inactive">✖ Ext Math</a>
+                <a href="float_math.html" class="nav-link inactive">📐 Float Math</a>
+                <a href="trig_math.html" class="nav-link inactive">📐 Trig Math</a>
+                <a href="expt_frac.html" class="nav-link inactive">?? Pwr & Frac</a>
+                <a href="serialization.html" class="nav-link inactive">?? Serialize</a>
+                <a href="adv_compare.html" class="nav-link inactive">?? Adv Compare</a>
+            </div>
+            <h2>S7-1200 Counter Logic</h2>
+            <p style="font-size: 0.7rem; color: var(--text-muted);">by Antigravity</p>
+        </div>
+    </header>
+
+    <main>
+        <!-- CTU Section -->
+        <section class="module" id="ctu-module">
+            <div class="module-header">
+                <h3>CTU: Count Up (SFB 0)</h3>
+            </div>
+
+            <div class="module-content">
+                <div class="hmi-panel">
+                    <h4>HMI Panel</h4>
+                    <div class="controls">
+                        <div class="input-group">
+                            <label>Preset Value (%MW10)</label>
+                            <input type="number" id="ctu-pv" value="5" min="1" max="999">
+                        </div>
+                        <div class="button-group" style="margin-top: 10px;">
+                            <button id="ctu-cu-btn" class="momentary-btn">Trigger %I0.0 (CU)</button>
+                            <button id="ctu-r-btn" class="momentary-btn">Trigger %I0.1 (R)</button>
+                            <button id="ctu-freeze-btn" class="momentary-btn">⏸ Freeze Graph</button>
+                        </div>
+                    </div>
+
+                    <div class="displays">
+                        <div class="display-box">
+                            <span class="label">Current Val (%MW12)</span>
+                            <span class="value" id="ctu-cv-display">0</span>
+                        </div>
+                        <div class="display-box">
+                            <span class="label">Output (%Q0.0)</span>
+                            <div class="led" id="ctu-q-led"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="logic-diagram">
+                    <div class="network-title">Network 1: Count Up Logic</div>
+                    <div class="ladder-network">
+                        <div class="power-rail"></div>
+
+                        <!-- CU Wire -->
+                        <div class="wire" id="wire-cu" style="left: 20px; top: 72px; width: 230px;"></div>
+                        <div class="tag-address" style="left: 105px; top: 40px;">%I0.0</div>
+                        <div class="contact-symbol" id="ctu-cu-contact" style="left: 100px; top: 72px;">--| |--</div>
+
+                        <!-- R Wire -->
+                        <div class="wire" id="wire-r" style="left: 200px; top: 105px; width: 50px;"></div>
+                        <div class="tag-address" style="left: 195px; top: 85px;">%I0.1</div>
+
+                        <!-- PV Wire -->
+                        <div class="wire" id="wire-pv" style="left: 200px; top: 138px; width: 50px;"></div>
+                        <div class="tag-address" style="left: 195px; top: 118px;">%MW10</div>
+                        <div class="online-box" id="ctu-pv-online" style="left: 195px; top: 142px;">= 5</div>
+
+                        <!-- Instruction Block -->
+                        <div class="instruction-box">
+                            <div class="box-title">CTU</div>
+                            <div class="pin-label pin-left pin-y1">CU</div>
+                            <div class="pin-label pin-left pin-y2">R</div>
+                            <div class="pin-label pin-left pin-y3">PV</div>
+                            <div class="pin-label pin-right pin-y1">Q</div>
+                            <div class="pin-label pin-right pin-y3">CV</div>
+                        </div>
+
+                        <!-- Q Wire -->
+                        <div class="wire" id="wire-q" style="left: 370px; top: 72px; width: 120px;"></div>
+                        <div class="tag-address" style="left: 410px; top: 40px;">%Q0.0</div>
+                        <div class="contact-symbol" id="ctu-q-coil" style="left: 405px; top: 72px;">--( )--</div>
+
+                        <!-- CV Wire -->
+                        <div class="wire" id="wire-cv" style="left: 370px; top: 138px; width: 40px;"></div>
+                        <div class="tag-address" style="left: 380px; top: 118px;">%MW12</div>
+                        <div class="online-box" id="ctu-cv-online" style="left: 380px; top: 142px;">= 0</div>
+                    </div>
+                </div>
+
+                <div class="timing-diagram">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); margin-bottom: 0.5rem; padding-bottom: 0.2rem;">
+                        <h4 style="border: none; margin: 0; padding: 0;">Timing Diagram (Operation of CTU)</h4>
+                    </div>
+                    <canvas id="ctu-timing-canvas" width="800" height="250"></canvas>
+                </div>
+
+                <div class="explanation">
+                    <strong>How CTU Works (S7-1200):</strong> The CTU counter counts up by 1 when the value of parameter
+                    CU changes from 0 to 1.
+                    <br><br>
+                    • If the value of parameter CV (current count value) is greater than or equal to the value of
+                    parameter PV (preset count value), then the counter output parameter Q = 1.
+                    <br>
+                    • If the value of the reset parameter R changes from 0 to 1, then the current count value is reset
+                    to 0.
+                </div>
+            </div>
+        </section>
+
+        <!-- CTD Section -->
+        <section class="module" id="ctd-module">
+            <div class="module-header">
+                <h3>CTD: Count Down (SFB 1)</h3>
+            </div>
+
+            <div class="module-content">
+                <div class="hmi-panel">
+                    <h4>HMI Panel</h4>
+                    <div class="controls">
+                        <div class="input-group">
+                            <label>Preset Value (%MW14)</label>
+                            <input type="number" id="ctd-pv" value="5" min="1" max="999">
+                        </div>
+                        <div class="button-group" style="margin-top: 10px;">
+                            <button id="ctd-cd-btn" class="momentary-btn">Trigger %I0.2 (CD)</button>
+                            <button id="ctd-ld-btn" class="momentary-btn">Trigger %I0.3 (LD)</button>
+                            <button id="ctd-freeze-btn" class="momentary-btn">⏸ Freeze Graph</button>
+                        </div>
+                    </div>
+
+                    <div class="displays">
+                        <div class="display-box">
+                            <span class="label">Current Val (%MW16)</span>
+                            <span class="value" id="ctd-cv-display">0</span>
+                        </div>
+                        <div class="display-box">
+                            <span class="label">Output (%Q0.1)</span>
+                            <div class="led" id="ctd-q-led"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="logic-diagram">
+                    <div class="network-title">Network 2: Count Down Logic</div>
+                    <div class="ladder-network">
+                        <div class="power-rail"></div>
+
+                        <!-- CD Wire -->
+                        <div class="wire" id="wire-cd" style="left: 20px; top: 72px; width: 230px;"></div>
+                        <div class="tag-address" style="left: 105px; top: 40px;">%I0.2</div>
+                        <div class="contact-symbol" id="ctd-cd-contact" style="left: 100px; top: 72px;">--| |--</div>
+
+                        <!-- LD Wire -->
+                        <div class="wire" id="wire-ld" style="left: 200px; top: 105px; width: 50px;"></div>
+                        <div class="tag-address" style="left: 195px; top: 85px;">%I0.3</div>
+
+                        <!-- PV Wire -->
+                        <div class="wire" id="wire-pv2" style="left: 200px; top: 138px; width: 50px;"></div>
+                        <div class="tag-address" style="left: 195px; top: 118px;">%MW14</div>
+                        <div class="online-box" id="ctd-pv-online" style="left: 195px; top: 142px;">= 5</div>
+
+                        <!-- Instruction Block -->
+                        <div class="instruction-box">
+                            <div class="box-title">CTD</div>
+                            <div class="pin-label pin-left pin-y1">CD</div>
+                            <div class="pin-label pin-left pin-y2">LD</div>
+                            <div class="pin-label pin-left pin-y3">PV</div>
+                            <div class="pin-label pin-right pin-y1">Q</div>
+                            <div class="pin-label pin-right pin-y3">CV</div>
+                        </div>
+
+                        <!-- Q Wire -->
+                        <div class="wire" id="wire-q2" style="left: 370px; top: 72px; width: 120px;"></div>
+                        <div class="tag-address" style="left: 410px; top: 40px;">%Q0.1</div>
+                        <div class="contact-symbol" id="ctd-q-coil" style="left: 405px; top: 72px;">--( )--</div>
+
+                        <!-- CV Wire -->
+                        <div class="wire" id="wire-cv2" style="left: 370px; top: 138px; width: 40px;"></div>
+                        <div class="tag-address" style="left: 380px; top: 118px;">%MW16</div>
+                        <div class="online-box" id="ctd-cv-online" style="left: 380px; top: 142px;">= 0</div>
+                    </div>
+                </div>
+
+                <div class="timing-diagram">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); margin-bottom: 0.5rem; padding-bottom: 0.2rem;">
+                        <h4 style="border: none; margin: 0; padding: 0;">Timing Diagram (Operation of CTD)</h4>
+                    </div>
+                    <canvas id="ctd-timing-canvas" width="800" height="250"></canvas>
+                </div>
+
+                <div class="explanation">
+                    <strong>How CTD Works (S7-1200):</strong> The CTD counter counts down by 1 when the value of
+                    parameter CD changes from 0 to 1.
+                    <br><br>
+                    • If the value of parameter CV (current count value) is less than or equal to zero (0), then the
+                    counter output parameter Q = 1.
+                    <br>
+                    • If the value of the load parameter LD changes from 0 to 1, then the current count value is loaded
+                    with the Preset Value (PV).
+                </div>
+            </div>
+        </section>
+
+        <!-- CTUD Section -->
+        <section class="module" id="ctud-module">
+            <div class="module-header">
+                <h3>CTUD: Count Up and Down (SFB 2)</h3>
+            </div>
+
+            <div class="module-content">
+                <div class="hmi-panel">
+                    <h4>HMI Panel</h4>
+                    <div class="controls">
+                        <div class="input-group">
+                            <label>Preset Value (%MW18)</label>
+                            <input type="number" id="ctud-pv" value="4" min="1" max="999">
+                        </div>
+                        <div class="button-group" style="margin-top: 10px;">
+                            <button id="ctud-cu-btn" class="momentary-btn">Trigger %I0.4 (CU)</button>
+                            <button id="ctud-cd-btn" class="momentary-btn">Trigger %I0.5 (CD)</button>
+                            <button id="ctud-r-btn" class="momentary-btn">Trigger %I0.6 (R)</button>
+                            <button id="ctud-ld-btn" class="momentary-btn">Trigger %I0.7 (LD)</button>
+                            <button id="ctud-freeze-btn" class="momentary-btn">⏸ Freeze Graph</button>
+                        </div>
+                    </div>
+
+                    <div class="displays">
+                        <div class="display-box">
+                            <span class="label">Current Val (%MW20)</span>
+                            <span class="value" id="ctud-cv-display">0</span>
+                        </div>
+                        <div class="display-box" style="flex-direction: column; gap: 5px;">
+                            <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+                                <span class="label">QU (%Q0.2)</span>
+                                <div class="led" id="ctud-qu-led"></div>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+                                <span class="label">QD (%Q0.3)</span>
+                                <div class="led" id="ctud-qd-led"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="logic-diagram">
+                    <div class="network-title">Network 3: Count Up and Down Logic</div>
+                    <div class="ladder-network" style="height: 250px;">
+                        <div class="power-rail" style="bottom: 0px;"></div>
+
+                        <!-- CU -->
+                        <div class="wire" style="left: 20px; top: 72px; width: 230px;"></div>
+                        <div class="tag-address" style="left: 105px; top: 40px;">%I0.4</div>
+                        <div class="contact-symbol" id="ctud-cu-contact" style="left: 100px; top: 72px;">--| |--</div>
+
+                        <!-- CD -->
+                        <div class="wire" style="left: 20px; top: 102px; width: 230px;"></div>
+                        <div class="tag-address" style="left: 105px; top: 82px;">%I0.5</div>
+                        <div class="contact-symbol" id="ctud-cd-contact" style="left: 100px; top: 102px;">--| |--</div>
+
+                        <!-- R -->
+                        <div class="wire" style="left: 200px; top: 132px; width: 50px;"></div>
+                        <div class="tag-address" style="left: 195px; top: 112px;">%I0.6</div>
+
+                        <!-- LD -->
+                        <div class="wire" style="left: 200px; top: 162px; width: 50px;"></div>
+                        <div class="tag-address" style="left: 195px; top: 142px;">%I0.7</div>
+
+                        <!-- PV -->
+                        <div class="wire" style="left: 200px; top: 192px; width: 50px;"></div>
+                        <div class="tag-address" style="left: 195px; top: 172px;">%MW18</div>
+                        <div class="online-box" id="ctud-pv-online" style="left: 195px; top: 196px;">= 4</div>
+
+                        <!-- Block -->
+                        <div class="instruction-box" style="height: 160px; top: 40px;">
+                            <div class="box-title">CTUD</div>
+                            <div class="pin-label pin-left" style="top: 25px;">CU</div>
+                            <div class="pin-label pin-left" style="top: 55px;">CD</div>
+                            <div class="pin-label pin-left" style="top: 85px;">R</div>
+                            <div class="pin-label pin-left" style="top: 115px;">LD</div>
+                            <div class="pin-label pin-left" style="top: 145px;">PV</div>
+
+                            <div class="pin-label pin-right" style="top: 25px;">QU</div>
+                            <div class="pin-label pin-right" style="top: 55px;">QD</div>
+                            <div class="pin-label pin-right" style="top: 145px;">CV</div>
+                        </div>
+
+                        <!-- QU -->
+                        <div class="wire" style="left: 370px; top: 72px; width: 120px;"></div>
+                        <div class="tag-address" style="left: 410px; top: 40px;">%Q0.2</div>
+                        <div class="contact-symbol" id="ctud-qu-coil" style="left: 405px; top: 72px;">--( )--</div>
+
+                        <!-- QD -->
+                        <div class="wire" style="left: 370px; top: 102px; width: 120px;"></div>
+                        <div class="tag-address" style="left: 410px; top: 82px;">%Q0.3</div>
+                        <div class="contact-symbol" id="ctud-qd-coil" style="left: 405px; top: 102px;">--( )--</div>
+
+                        <!-- CV -->
+                        <div class="wire" style="left: 370px; top: 192px; width: 40px;"></div>
+                        <div class="tag-address" style="left: 380px; top: 172px;">%MW20</div>
+                        <div class="online-box" id="ctud-cv-online" style="left: 380px; top: 196px;">= 0</div>
+                    </div>
+                </div>
+
+                <div class="timing-diagram">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); margin-bottom: 0.5rem; padding-bottom: 0.2rem;">
+                        <h4 style="border: none; margin: 0; padding: 0;">Timing Diagram (Operation of CTUD)</h4>
+                    </div>
+                    <canvas id="ctud-timing-canvas" width="800" height="350"></canvas>
+                </div>
+
+                <div class="explanation">
+                    <strong>How CTUD Works (S7-1200):</strong> The CTUD counter counts up or down by 1 on the 0 to 1
+                    transition of the CU or CD inputs.
+                    <br><br>
+                    • If CV >= PV, output QU = 1.<br>
+                    • If CV <= 0, output QD=1.<br>
+                        • If LOAD changes to 1, CV is loaded with PV.<br>
+                        • If R changes to 1, CV is reset to 0.<br>
+                        <em>Note: As per Siemens specs, data is lost after a CPU power cycle unless the instance DB is
+                            set to retentive.</em>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
+

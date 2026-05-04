@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S7-1200 Data Ops Simulator | TIA Portal</title>
+    <meta name="description" content="Interactive Siemens S7-1200 PLC Data Operations simulator featuring Math (ADD, SUB, MUL, DIV) and Comparators (IN_RANGE, CMP).">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .analog-slider {
+            width: 100%;
+            margin-top: 5px;
+            margin-bottom: 15px;
+        }
+        .analog-value {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent);
+            font-weight: bold;
+        }
+        .digital-display {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            color: #fff;
+            background: #111;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            text-align: right;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+        }
+        .digital-display.active-led {
+            color: var(--accent);
+            text-shadow: 0 0 10px var(--accent);
+        }
+        .equation {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin: 10px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo" style="display: flex; align-items: center; gap: 15px;">
+            <img src="logo.png" alt="Squarewave Logo" onerror="this.style.display='none'">
+            <div>
+                <h1>TIA PORTAL SIMULATOR</h1>
+                <p>Squarewave Automation Technologies Pvt. Ltd.</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="nav-links">
+                <a href="index.html" class="nav-link inactive">⚡ Counters</a>
+                <a href="timers.html" class="nav-link inactive">⏱ Timers</a>
+                <a href="dataops.html" class="nav-link active">🧮 Math & Compare</a>
+                <a href="scale.html" class="nav-link inactive">🌡 Analog Scaling</a>
+                <a href="move.html" class="nav-link inactive">🔄 Move & Shift</a>
+                <a href="bitlogic.html" class="nav-link inactive">🔌 Bit Logic</a>
+                <a href="advmath.html" class="nav-link inactive">📈 Adv Math</a>
+                <a href="extended_math.html" class="nav-link inactive">✖ Ext Math</a>
+                <a href="float_math.html" class="nav-link inactive">📐 Float Math</a>
+                <a href="trig_math.html" class="nav-link inactive">📐 Trig Math</a>
+                <a href="expt_frac.html" class="nav-link inactive">?? Pwr & Frac</a>
+                <a href="serialization.html" class="nav-link inactive">?? Serialize</a>
+                <a href="adv_compare.html" class="nav-link inactive">?? Adv Compare</a>
+            </div>
+            <h2>S7-1200 Data Operations</h2>
+            <p style="font-size: 0.7rem; color: var(--text-muted);">by Antigravity</p>
+        </div>
+    </header>
+
+    <main>
+        <!-- Math Section -->
+        <section class="module" id="math-module">
+            <div class="module-header">
+                <h3>Math Operations (ADD, SUB, MUL, DIV)</h3>
+            </div>
+            <div class="instruction-description" style="padding: 10px 15px; background: rgba(0, 255, 204, 0.1); border-left: 4px solid var(--primary); margin-bottom: 15px; font-size: 0.9rem;">
+                <strong>Instruction Description:</strong> Executes the mathematical operation: ADD (Addition), SUB (Subtraction), MUL (Multiplication), DIV (Division).
+            </div>
+            
+            <div class="module-content">
+                <div class="hmi-panel">
+                    <h4>HMI Panel</h4>
+                    <div class="controls">
+                        <div class="input-group">
+                            <label>Operation</label>
+                            <select id="math-op" style="width: 100%; padding: 8px; margin-bottom: 15px; background: var(--bg-dark); color: var(--text-light); border: 1px solid var(--border); border-radius: 4px;">
+                                <option value="ADD">ADD (IN1 + IN2)</option>
+                                <option value="SUB">SUB (IN1 - IN2)</option>
+                                <option value="MUL">MUL (IN1 * IN2)</option>
+                                <option value="DIV">DIV (IN1 / IN2)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>IN1 Value: <span id="math-in1-val" class="analog-value">0</span></label>
+                            <input type="range" id="math-in1" class="analog-slider" min="-100" max="100" value="0">
+                        </div>
+                        <div class="input-group">
+                            <label>IN2 Value: <span id="math-in2-val" class="analog-value">0</span></label>
+                            <input type="range" id="math-in2" class="analog-slider" min="-100" max="100" value="0">
+                        </div>
+                    </div>
+                    
+                    <div class="displays">
+                        <div class="equation" id="math-equation">0 + 0 = 0</div>
+                        <div class="display-box" style="margin-top: 15px;">
+                            <span class="label">OUT Result (%MD20)</span>
+                            <div class="digital-display" id="math-out">0</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="logic-diagram">
+                    <div class="network-title">Network 1: Math Operation</div>
+                    <div class="ladder-network" style="height: 180px;">
+                        <div class="power-rail"></div>
+
+                        <!-- EN Wire -->
+                        <div class="wire" style="left: 20px; top: 72px; width: 230px;"></div>
+                        <div class="tag-address" style="left: 105px; top: 40px;">Always ON</div>
+                        <div class="contact-symbol" style="left: 100px; top: 72px;">--| |--</div>
+
+                        <!-- IN1 -->
+                        <div class="wire" style="left: 200px; top: 105px; width: 50px;"></div>
+                        <div class="tag-address" style="left: 195px; top: 85px;">IN1</div>
+
+                        <!-- IN2 -->
+                        <div class="wire" style="left: 200px; top: 138px; width: 50px;"></div>
+                        <div class="tag-address" style="left: 195px; top: 118px;">IN2</div>
+
+                        <!-- Instruction Block -->
+                        <div class="instruction-box" style="left: 250px; top: 40px; height: 120px; width: 100px;">
+                            <div class="box-title" id="ladder-math-title">ADD</div>
+                            <div class="pin-label pin-left pin-y1">EN</div>
+                            <div class="pin-label pin-left pin-y2">IN1</div>
+                            <div class="pin-label pin-left pin-y3">IN2</div>
+                            
+                            <div class="pin-label pin-right pin-y1">ENO</div>
+                            <div class="pin-label pin-right pin-y3">OUT</div>
+                        </div>
+
+                        <!-- ENO Wire -->
+                        <div class="wire" style="left: 370px; top: 72px; width: 120px;"></div>
+                        
+                        <!-- OUT Wire -->
+                        <div class="wire" style="left: 370px; top: 132px; width: 40px;"></div>
+                        <div class="tag-address" style="left: 380px; top: 112px;">%MD20</div>
+                    </div>
+                </div>
+                
+                <div class="visualization-panel">
+                    <h4>Timing Diagram (Analog Values)</h4>
+                    <canvas id="math-canvas"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Comparator Section -->
+        <section class="module" id="cmp-module">
+            <div class="module-header">
+                <h3>Comparator (CMP >=) & IN_RANGE</h3>
+            </div>
+            <div class="instruction-description" style="padding: 10px 15px; background: rgba(0, 255, 204, 0.1); border-left: 4px solid var(--primary); margin-bottom: 15px; font-size: 0.9rem;">
+                <strong>Instruction Description:</strong> CMP compares two values. IN_RANGE tests if the value of parameter VAL is within a specified value range.
+            </div>
+            
+            <div class="module-content">
+                <div class="hmi-panel">
+                    <h4>HMI Panel</h4>
+                    <div class="controls">
+                        <div class="input-group">
+                            <label>Sensor Value (IN): <span id="cmp-in-val" class="analog-value">0</span></label>
+                            <input type="range" id="cmp-in" class="analog-slider" min="0" max="100" value="0">
+                        </div>
+                        <div class="input-group">
+                            <label>Threshold (CMP >=): <span id="cmp-thresh-val" class="analog-value">50</span></label>
+                            <input type="range" id="cmp-thresh" class="analog-slider" min="0" max="100" value="50">
+                        </div>
+                        <div style="display:flex; gap:10px;">
+                            <div class="input-group" style="flex:1;">
+                                <label>MIN Range</label>
+                                <input type="number" id="cmp-min" value="20" style="width:100%">
+                            </div>
+                            <div class="input-group" style="flex:1;">
+                                <label>MAX Range</label>
+                                <input type="number" id="cmp-max" value="80" style="width:100%">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="displays" style="margin-top: 15px;">
+                        <div class="display-box">
+                            <span class="label">CMP >= Output (%Q0.0)</span>
+                            <div class="led" id="cmp-led"></div>
+                        </div>
+                        <div class="display-box">
+                            <span class="label">IN_RANGE Output (%Q0.1)</span>
+                            <div class="led" id="range-led"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="logic-diagram">
+                    <div class="network-title">Network 2: Compare & IN_RANGE</div>
+                    <div class="ladder-network" style="height: 250px;">
+                        <div class="power-rail"></div>
+
+                        <!-- CMP >= Block -->
+                        <div class="wire" style="left: 20px; top: 72px; width: 80px;"></div>
+                        <div class="tag-address" style="left: 50px; top: 40px;">EN</div>
+                        
+                        <div class="instruction-box" style="left: 100px; top: 40px; width: 80px; height: 90px;">
+                            <div class="box-title">CMP >=</div>
+                            <div class="pin-label pin-left pin-y1">IN1</div>
+                            <div class="pin-label pin-left pin-y2">IN2</div>
+                        </div>
+
+                        <div class="wire" style="left: 180px; top: 72px; width: 80px;"></div>
+                        <div class="tag-address" style="left: 210px; top: 40px;">%Q0.0</div>
+                        <div class="contact-symbol" id="ladder-cmp-coil" style="left: 200px; top: 72px;">--( )--</div>
+
+                        <div class="tag-address" style="left: 30px; top: 60px; font-size:10px;">IN</div>
+                        <div class="tag-address" style="left: 20px; top: 90px; font-size:10px;">Thresh</div>
+
+                        <!-- IN_RANGE Block -->
+                        <div class="wire" style="left: 20px; top: 182px; width: 80px;"></div>
+                        <div class="tag-address" style="left: 50px; top: 150px;">EN</div>
+                        
+                        <div class="instruction-box" style="left: 100px; top: 140px; width: 80px; height: 100px;">
+                            <div class="box-title" style="font-size:10px;">IN_RANGE</div>
+                            <div class="pin-label pin-left pin-y1">MIN</div>
+                            <div class="pin-label pin-left pin-y2">VAL</div>
+                            <div class="pin-label pin-left pin-y3">MAX</div>
+                        </div>
+
+                        <div class="wire" style="left: 180px; top: 182px; width: 80px;"></div>
+                        <div class="tag-address" style="left: 210px; top: 150px;">%Q0.1</div>
+                        <div class="contact-symbol" id="ladder-range-coil" style="left: 200px; top: 182px;">--( )--</div>
+                    </div>
+                </div>
+                
+                <div class="visualization-panel">
+                    <h4>Timing Diagram</h4>
+                    <canvas id="cmp-canvas"></canvas>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>Siemens S7-1200 Instruction Simulator - Squarewave Automation Technologies</p>
+    </footer>
+
+    <script src="dataops.js"></script>
+</body>
+</html>
+

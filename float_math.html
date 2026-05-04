@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S7-1200 Float Math Simulator | TIA Portal</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="logo" style="display: flex; align-items: center; gap: 15px;">
+            <img src="logo.png" alt="Squarewave Logo" onerror="this.style.display='none'">
+            <div>
+                <h1>TIA PORTAL SIMULATOR</h1>
+                <p>Squarewave Automation Technologies Pvt. Ltd.</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="nav-links">
+                <a href="index.html" class="nav-link inactive">⚡ Counters</a>
+                <a href="timers.html" class="nav-link inactive">⏱ Timers</a>
+                <a href="dataops.html" class="nav-link inactive">🧮 Math & Compare</a>
+                <a href="scale.html" class="nav-link inactive">🌡 Analog Scaling</a>
+                <a href="move.html" class="nav-link inactive">🔄 Move & Shift</a>
+                <a href="bitlogic.html" class="nav-link inactive">🔌 Bit Logic</a>
+                <a href="advmath.html" class="nav-link inactive">📈 Adv Math</a>
+                <a href="extended_math.html" class="nav-link inactive">✖ Ext Math</a>
+                <a href="float_math.html" class="nav-link active">📐 Float Math</a>
+                <a href="trig_math.html" class="nav-link inactive">📐 Trig Math</a>
+                <a href="expt_frac.html" class="nav-link inactive">?? Pwr & Frac</a>
+                <a href="serialization.html" class="nav-link inactive">?? Serialize</a>
+                <a href="adv_compare.html" class="nav-link inactive">?? Adv Compare</a>
+            </div>
+            <h2>S7-1200 Float Math (Trig & Exp)</h2>
+            <p style="font-size: 0.7rem; color: var(--text-muted);">by Antigravity</p>
+        </div>
+    </header>
+
+    <main>
+        <!-- SQR & SQRT -->
+        <section class="module" id="sqr-sqrt-module">
+            <div class="module-header">
+                <h3>SQR (Form Square) & SQRT (Form Square Root)</h3>
+            </div>
+            <div class="instruction-description" style="padding: 10px 15px; background: rgba(0, 255, 204, 0.1); border-left: 4px solid var(--primary); margin-bottom: 15px; font-size: 0.9rem;">
+                <strong>SQR Description:</strong> Forms the square of the floating-point value at IN (IN² = OUT).<br>
+                <strong>SQRT Description:</strong> Forms the square root of the floating-point value at IN (√IN = OUT). If IN is negative, it returns NaN.
+            </div>
+            <div class="module-content">
+                <div class="hmi-panel">
+                    <h4>HMI Panel</h4>
+                    <div class="controls">
+                        <div class="input-group">
+                            <label>IN Value: <span id="sqr-sqrt-in-val" class="analog-value">9.0</span></label>
+                            <input type="range" id="sqr-sqrt-in" class="analog-slider" min="-100" max="100" step="0.5" value="9.0">
+                        </div>
+                    </div>
+                    
+                    <div class="displays" style="margin-top: 15px; display: grid; grid-template-columns: 1fr; gap: 15px;">
+                        <div class="display-box">
+                            <span class="label">SQR OUT</span>
+                            <div class="digital-display" id="sqr-out" style="font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; text-align: right; background: #111; color: #ffaa00; padding: 10px; border-radius: 4px; border: 1px solid var(--border);">81.0</div>
+                        </div>
+                        <div class="display-box">
+                            <span class="label">SQRT OUT</span>
+                            <div class="digital-display" id="sqrt-out" style="font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; text-align: right; background: #111; color: #ff00aa; padding: 10px; border-radius: 4px; border: 1px solid var(--border);">3.0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="logic-diagram">
+                    <div class="network-title">Network 1: Square & Square Root</div>
+                    <div class="ladder-network" style="height: 250px;">
+                        <div class="power-rail"></div>
+
+                        <!-- SQR Block -->
+                        <div class="wire" style="left: 20px; top: 72px; width: 60px;"></div>
+                        
+                        <div class="instruction-box" style="left: 80px; top: 40px; height: 80px; width: 80px;">
+                            <div class="box-title">SQR</div>
+                            <div class="pin-label pin-left pin-y1">EN</div>
+                            <div class="pin-label pin-left pin-y2">IN</div>
+                            <div class="pin-label pin-right pin-y1">ENO</div>
+                            <div class="pin-label pin-right pin-y2">OUT</div>
+                        </div>
+                        
+                        <div class="wire" style="left: 160px; top: 87px; width: 40px;"></div>
+                        <div class="tag-address" style="left: 210px; top: 75px;">%MD10</div>
+
+                        <div class="tag-address" style="left: 45px; top: 70px;">IN</div>
+
+                        <!-- SQRT Block -->
+                        <div class="wire" style="left: 20px; top: 172px; width: 60px;"></div>
+                        
+                        <div class="instruction-box" style="left: 80px; top: 140px; height: 80px; width: 80px;">
+                            <div class="box-title">SQRT</div>
+                            <div class="pin-label pin-left pin-y1">EN</div>
+                            <div class="pin-label pin-left pin-y2">IN</div>
+                            <div class="pin-label pin-right pin-y1">ENO</div>
+                            <div class="pin-label pin-right pin-y2">OUT</div>
+                        </div>
+                        
+                        <div class="wire" style="left: 160px; top: 187px; width: 40px;"></div>
+                        <div class="tag-address" style="left: 210px; top: 175px;">%MD14</div>
+
+                        <div class="tag-address" style="left: 45px; top: 170px;">IN</div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LN & EXP -->
+        <section class="module" id="ln-exp-module">
+            <div class="module-header">
+                <h3>LN (Natural Logarithm) & EXP (Exponential Value)</h3>
+            </div>
+            <div class="instruction-description" style="padding: 10px 15px; background: rgba(0, 255, 204, 0.1); border-left: 4px solid var(--primary); margin-bottom: 15px; font-size: 0.9rem;">
+                <strong>LN Description:</strong> Forms the natural logarithm of the floating-point value at IN (LN(IN) = OUT). Returns NaN if IN ≤ 0.<br>
+                <strong>EXP Description:</strong> Forms the exponential value of the floating-point value at IN (e^IN = OUT). Base e = 2.718281...
+            </div>
+            <div class="module-content">
+                <div class="hmi-panel">
+                    <h4>HMI Panel</h4>
+                    <div class="controls">
+                        <div class="input-group">
+                            <label>IN Value: <span id="ln-exp-in-val" class="analog-value">1.0</span></label>
+                            <input type="range" id="ln-exp-in" class="analog-slider" min="-10" max="10" step="0.1" value="1.0">
+                        </div>
+                    </div>
+                    
+                    <div class="displays" style="margin-top: 15px; display: grid; grid-template-columns: 1fr; gap: 15px;">
+                        <div class="display-box">
+                            <span class="label">LN OUT</span>
+                            <div class="digital-display" id="ln-out" style="font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; text-align: right; background: #111; color: #00ffcc; padding: 10px; border-radius: 4px; border: 1px solid var(--border);">0.0</div>
+                        </div>
+                        <div class="display-box">
+                            <span class="label">EXP OUT</span>
+                            <div class="digital-display" id="exp-out" style="font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; text-align: right; background: #111; color: #ff00aa; padding: 10px; border-radius: 4px; border: 1px solid var(--border);">2.718</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="logic-diagram">
+                    <div class="network-title">Network 2: Natural Log & Exponential</div>
+                    <div class="ladder-network" style="height: 250px;">
+                        <div class="power-rail"></div>
+
+                        <!-- LN Block -->
+                        <div class="wire" style="left: 20px; top: 72px; width: 60px;"></div>
+                        
+                        <div class="instruction-box" style="left: 80px; top: 40px; height: 80px; width: 80px;">
+                            <div class="box-title">LN</div>
+                            <div class="pin-label pin-left pin-y1">EN</div>
+                            <div class="pin-label pin-left pin-y2">IN</div>
+                            <div class="pin-label pin-right pin-y1">ENO</div>
+                            <div class="pin-label pin-right pin-y2">OUT</div>
+                        </div>
+                        
+                        <div class="wire" style="left: 160px; top: 87px; width: 40px;"></div>
+                        <div class="tag-address" style="left: 210px; top: 75px;">%MD20</div>
+
+                        <div class="tag-address" style="left: 45px; top: 70px;">IN</div>
+
+                        <!-- EXP Block -->
+                        <div class="wire" style="left: 20px; top: 172px; width: 60px;"></div>
+                        
+                        <div class="instruction-box" style="left: 80px; top: 140px; height: 80px; width: 80px;">
+                            <div class="box-title">EXP</div>
+                            <div class="pin-label pin-left pin-y1">EN</div>
+                            <div class="pin-label pin-left pin-y2">IN</div>
+                            <div class="pin-label pin-right pin-y1">ENO</div>
+                            <div class="pin-label pin-right pin-y2">OUT</div>
+                        </div>
+                        
+                        <div class="wire" style="left: 160px; top: 187px; width: 40px;"></div>
+                        <div class="tag-address" style="left: 210px; top: 175px;">%MD24</div>
+
+                        <div class="tag-address" style="left: 45px; top: 170px;">IN</div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Siemens S7-1200 Instruction Simulator - Squarewave Automation Technologies</p>
+    </footer>
+
+    <script src="float_math.js"></script>
+</body>
+</html>
+

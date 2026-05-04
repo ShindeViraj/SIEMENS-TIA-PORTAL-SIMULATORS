@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S7-1200 Timer Simulator | TIA Portal</title>
+    <meta name="description" content="Interactive Siemens S7-1200 PLC timer simulator featuring TP, TON, TOF, and TONR instructions with real-time timing diagrams and ladder logic visualization.">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="logo" style="display: flex; align-items: center; gap: 15px;">
+            <img src="logo.png" alt="Squarewave Logo" onerror="this.style.display='none'">
+            <div>
+                <h1>TIA PORTAL SIMULATOR</h1>
+                <p>Squarewave Automation Technologies Pvt. Ltd.</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="nav-links">
+                <a href="index.html" class="nav-link inactive">⚡ Counters</a>
+                <a href="timers.html" class="nav-link active">⏱ Timers</a>
+                <a href="dataops.html" class="nav-link inactive">🧮 Math & Compare</a>
+                <a href="scale.html" class="nav-link inactive">🌡 Analog Scaling</a>
+                <a href="move.html" class="nav-link inactive">🔄 Move & Shift</a>
+                <a href="bitlogic.html" class="nav-link inactive">🔌 Bit Logic</a>
+                <a href="advmath.html" class="nav-link inactive">📈 Adv Math</a>
+                <a href="extended_math.html" class="nav-link inactive">✖ Ext Math</a>
+                <a href="float_math.html" class="nav-link inactive">📐 Float Math</a>
+                <a href="trig_math.html" class="nav-link inactive">📐 Trig Math</a>
+                <a href="expt_frac.html" class="nav-link inactive">?? Pwr & Frac</a>
+                <a href="serialization.html" class="nav-link inactive">?? Serialize</a>
+                <a href="adv_compare.html" class="nav-link inactive">?? Adv Compare</a>
+            </div>
+            <h2>S7-1200 Timer Logic</h2>
+            <p style="font-size: 0.7rem; color: var(--text-muted);">by Antigravity</p>
+        </div>
+    </header>
+
+    <main>
+        <!-- TP Section -->
+        <section class="module" id="tp-module">
+            <div class="module-header">
+                <h3>TP: Generate Pulse</h3>
+            </div>
+            
+            <div class="module-content">
+                <div class="hmi-panel">
+                    <h4>HMI Panel</h4>
+                    <div class="controls">
+                        <div class="input-group">
+                            <label>Preset Time (PT in ms)</label>
+                            <input type="number" id="tp-pt" value="3000" min="100" max="10000" step="100">
+                        </div>
+                        <div class="button-group" style="margin-top: 10px;">
+                            <button id="tp-in-btn" class="momentary-btn">Toggle %I0.0 (IN)</button>
+                            <button id="tp-freeze-btn" class="momentary-btn">⏸ Freeze Graph</button>
+                        </div>
+                    </div>
+                    
+                    <div class="displays">
+                        <div class="display-box">
+                            <span class="label">Elapsed Time (%MD10)</span>
+                            <span class="value" id="tp-et-display">0 ms</span>
+                        </div>
+                        <div class="display-box">
+                            <span class="label">Output (%Q0.0)</span>
+                            <div class="led" id="tp-q-led"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="logic-diagram">
+                    <div class="network-title">Network 1: TP Pulse Timer Logic</div>
+                    <div class="ladder-network">
+                        <div class="power-rail"></div>
+                        
+                        <!-- IN -->
+                        <div class="wire" style="left: 20px; top: 72px; width: 230px;"></div>
+                        <div class="tag-address" style="left: 105px; top: 40px;">%I0.0</div>
+                        <div class="contact-symbol" id="tp-in-contact" style="left: 100px; top: 72px;">--| |--</div>
+                        
+                        <!-- Block -->
+                        <div class="instruction-box">
+                            <div class="box-title">TP</div>
+                            <div class="pin-label pin-left pin-y1">IN</div>
+                            <div class="pin-label pin-left pin-y3">PT</div>
+                            
+                            <div class="pin-label pin-right pin-y1">Q</div>
+                            <div class="pin-label pin-right pin-y3">ET</div>
+                        </div>
+
+                        <!-- PT value -->
+                        <div class="wire" style="left: 200px; top: 132px; width: 50px;"></div>
+                        <div class="online-box" id="tp-pt-online" style="left: 175px; top: 136px;">T#3s</div>
+
+                        <!-- Q -->
+                        <div class="wire" style="left: 370px; top: 72px; width: 120px;"></div>
+                        <div class="tag-address" style="left: 410px; top: 40px;">%Q0.0</div>
+                        <div class="contact-symbol" id="tp-q-coil" style="left: 405px; top: 72px;">--( )--</div>
+
+                        <!-- ET -->
+                        <div class="wire" style="left: 370px; top: 132px; width: 40px;"></div>
+                        <div class="tag-address" style="left: 380px; top: 112px;">%MD10</div>
+                        <div class="online-box" id="tp-et-online" style="left: 380px; top: 136px;">T#0s</div>
+                    </div>
+                </div>
+
+                <div class="timing-diagram">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); margin-bottom: 0.5rem; padding-bottom: 0.2rem;">
+                        <h4 style="border: none; margin: 0; padding: 0;">Timing Diagram (Operation of TP)</h4>
+                    </div>
+                    <canvas id="tp-timing-canvas" width="800" height="250"></canvas>
+                </div>
+
+                <div class="explanation">
+                    <strong>Description:</strong> The TP timer generates a pulse with a preset width time.
+                    <br><br>
+                    <em>Note: Each timer uses a 16 byte IEC_Timer data type DB structure to store timer data.</em>
+                </div>
+            </div>
+        </section>
+
+        <!-- TON Section -->
+        <section class="module" id="ton-module">
+            <div class="module-header">
+                <h3>TON: Generate On-Delay</h3>
+            </div>
+            
+            <div class="module-content">
+                <div class="hmi-panel">
+                    <h4>HMI Panel</h4>
+                    <div class="controls">
+                        <div class="input-group">
+                            <label>Preset Time (PT in ms)</label>
+                            <input type="number" id="ton-pt" value="3000" min="100" max="10000" step="100">
+                        </div>
+                        <div class="button-group" style="margin-top: 10px;">
+                            <button id="ton-in-btn" class="momentary-btn">Toggle %I0.1 (IN)</button>
+                            <button id="ton-freeze-btn" class="momentary-btn">⏸ Freeze Graph</button>
+                        </div>
+                    </div>
+                    
+                    <div class="displays">
+                        <div class="display-box">
+                            <span class="label">Elapsed Time (%MD14)</span>
+                            <span class="value" id="ton-et-display">0 ms</span>
+                        </div>
+                        <div class="display-box">
+                            <span class="label">Output (%Q0.1)</span>
+                            <div class="led" id="ton-q-led"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="logic-diagram">
+                    <div class="network-title">Network 2: TON On-Delay Timer Logic</div>
+                    <div class="ladder-network">
+                        <div class="power-rail"></div>
+                        
+                        <!-- IN -->
+                        <div class="wire" style="left: 20px; top: 72px; width: 230px;"></div>
+                        <div class="tag-address" style="left: 105px; top: 40px;">%I0.1</div>
+                        <div class="contact-symbol" id="ton-in-contact" style="left: 100px; top: 72px;">--| |--</div>
+                        
+                        <!-- Block -->
+                        <div class="instruction-box">
+                            <div class="box-title">TON</div>
+                            <div class="pin-label pin-left pin-y1">IN</div>
+                            <div class="pin-label pin-left pin-y3">PT</div>
+                            
+                            <div class="pin-label pin-right pin-y1">Q</div>
+                            <div class="pin-label pin-right pin-y3">ET</div>
+                        </div>
+
+                        <!-- PT value -->
+                        <div class="wire" style="left: 200px; top: 132px; width: 50px;"></div>
+                        <div class="online-box" id="ton-pt-online" style="left: 175px; top: 136px;">T#3s</div>
+
+                        <!-- Q -->
+                        <div class="wire" style="left: 370px; top: 72px; width: 120px;"></div>
+                        <div class="tag-address" style="left: 410px; top: 40px;">%Q0.1</div>
+                        <div class="contact-symbol" id="ton-q-coil" style="left: 405px; top: 72px;">--( )--</div>
+
+                        <!-- ET -->
+                        <div class="wire" style="left: 370px; top: 132px; width: 40px;"></div>
+                        <div class="tag-address" style="left: 380px; top: 112px;">%MD14</div>
+                        <div class="online-box" id="ton-et-online" style="left: 380px; top: 136px;">T#0s</div>
+                    </div>
+                </div>
+
+                <div class="timing-diagram">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); margin-bottom: 0.5rem; padding-bottom: 0.2rem;">
+                        <h4 style="border: none; margin: 0; padding: 0;">Timing Diagram (Operation of TON)</h4>
+                    </div>
+                    <canvas id="ton-timing-canvas" width="800" height="250"></canvas>
+                </div>
+
+                <div class="explanation">
+                    <strong>Description:</strong> The TON timer sets output Q to ON after a preset time delay.
+                </div>
+            </div>
+        </section>
+
+        <!-- TOF Section -->
+        <section class="module" id="tof-module">
+            <div class="module-header">
+                <h3>TOF: Generate OFF-Delay</h3>
+            </div>
+            
+            <div class="module-content">
+                <div class="hmi-panel">
+                    <h4>HMI Panel</h4>
+                    <div class="controls">
+                        <div class="input-group">
+                            <label>Preset Time (PT in ms)</label>
+                            <input type="number" id="tof-pt" value="3000" min="100" max="10000" step="100">
+                        </div>
+                        <div class="button-group" style="margin-top: 10px;">
+                            <button id="tof-in-btn" class="momentary-btn">Toggle %I0.2 (IN)</button>
+                            <button id="tof-freeze-btn" class="momentary-btn">⏸ Freeze Graph</button>
+                        </div>
+                    </div>
+                    
+                    <div class="displays">
+                        <div class="display-box">
+                            <span class="label">Elapsed Time (%MD18)</span>
+                            <span class="value" id="tof-et-display">0 ms</span>
+                        </div>
+                        <div class="display-box">
+                            <span class="label">Output (%Q0.2)</span>
+                            <div class="led" id="tof-q-led"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="logic-diagram">
+                    <div class="network-title">Network 3: TOF OFF-Delay Timer Logic</div>
+                    <div class="ladder-network">
+                        <div class="power-rail"></div>
+                        
+                        <!-- IN -->
+                        <div class="wire" style="left: 20px; top: 72px; width: 230px;"></div>
+                        <div class="tag-address" style="left: 105px; top: 40px;">%I0.2</div>
+                        <div class="contact-symbol" id="tof-in-contact" style="left: 100px; top: 72px;">--| |--</div>
+                        
+                        <!-- Block -->
+                        <div class="instruction-box">
+                            <div class="box-title">TOF</div>
+                            <div class="pin-label pin-left pin-y1">IN</div>
+                            <div class="pin-label pin-left pin-y3">PT</div>
+                            
+                            <div class="pin-label pin-right pin-y1">Q</div>
+                            <div class="pin-label pin-right pin-y3">ET</div>
+                        </div>
+
+                        <!-- PT value -->
+                        <div class="wire" style="left: 200px; top: 132px; width: 50px;"></div>
+                        <div class="online-box" id="tof-pt-online" style="left: 175px; top: 136px;">T#3s</div>
+
+                        <!-- Q -->
+                        <div class="wire" style="left: 370px; top: 72px; width: 120px;"></div>
+                        <div class="tag-address" style="left: 410px; top: 40px;">%Q0.2</div>
+                        <div class="contact-symbol" id="tof-q-coil" style="left: 405px; top: 72px;">--( )--</div>
+
+                        <!-- ET -->
+                        <div class="wire" style="left: 370px; top: 132px; width: 40px;"></div>
+                        <div class="tag-address" style="left: 380px; top: 112px;">%MD18</div>
+                        <div class="online-box" id="tof-et-online" style="left: 380px; top: 136px;">T#0s</div>
+                    </div>
+                </div>
+
+                <div class="timing-diagram">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); margin-bottom: 0.5rem; padding-bottom: 0.2rem;">
+                        <h4 style="border: none; margin: 0; padding: 0;">Timing Diagram (Operation of TOF)</h4>
+                    </div>
+                    <canvas id="tof-timing-canvas" width="800" height="250"></canvas>
+                </div>
+
+                <div class="explanation">
+                    <strong>Description:</strong> The TOF timer resets output Q to OFF after a preset time delay.
+                </div>
+            </div>
+        </section>
+
+        <!-- TONR Section -->
+        <section class="module" id="tonr-module">
+            <div class="module-header">
+                <h3>TONR: Time Accumulator (Retentive On-Delay)</h3>
+            </div>
+            
+            <div class="module-content">
+                <div class="hmi-panel">
+                    <h4>HMI Panel</h4>
+                    <div class="controls">
+                        <div class="input-group">
+                            <label>Preset Time (PT in ms)</label>
+                            <input type="number" id="tonr-pt" value="3000" min="100" max="10000" step="100">
+                        </div>
+                        <div class="button-group" style="margin-top: 10px;">
+                            <button id="tonr-in-btn" class="momentary-btn">Toggle %I0.3 (IN)</button>
+                            <button id="tonr-r-btn" class="momentary-btn">Trigger %I0.4 (R)</button>
+                            <button id="tonr-freeze-btn" class="momentary-btn">⏸ Freeze Graph</button>
+                        </div>
+                    </div>
+                    
+                    <div class="displays">
+                        <div class="display-box">
+                            <span class="label">Elapsed Time (%MD22)</span>
+                            <span class="value" id="tonr-et-display">0 ms</span>
+                        </div>
+                        <div class="display-box">
+                            <span class="label">Output (%Q0.3)</span>
+                            <div class="led" id="tonr-q-led"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="logic-diagram">
+                    <div class="network-title">Network 4: TONR Accumulator Logic</div>
+                    <div class="ladder-network" style="height: 200px;">
+                        <div class="power-rail" style="height: 180px;"></div>
+                        
+                        <!-- IN -->
+                        <div class="wire" style="left: 20px; top: 72px; width: 230px;"></div>
+                        <div class="tag-address" style="left: 105px; top: 40px;">%I0.3</div>
+                        <div class="contact-symbol" id="tonr-in-contact" style="left: 100px; top: 72px;">--| |--</div>
+                        
+                        <!-- R -->
+                        <div class="wire" style="left: 20px; top: 102px; width: 230px;"></div>
+                        <div class="tag-address" style="left: 105px; top: 82px;">%I0.4</div>
+                        <div class="contact-symbol" id="tonr-r-contact" style="left: 100px; top: 102px;">--| |--</div>
+
+                        <!-- Block -->
+                        <div class="instruction-box" style="height: 130px;">
+                            <div class="box-title">TONR</div>
+                            <div class="pin-label pin-left pin-y1">IN</div>
+                            <div class="pin-label pin-left pin-y2">R</div>
+                            <div class="pin-label pin-left" style="top: 100px;">PT</div>
+                            
+                            <div class="pin-label pin-right pin-y1">Q</div>
+                            <div class="pin-label pin-right" style="top: 100px;">ET</div>
+                        </div>
+
+                        <!-- PT value -->
+                        <div class="wire" style="left: 200px; top: 147px; width: 50px;"></div>
+                        <div class="online-box" id="tonr-pt-online" style="left: 175px; top: 151px;">T#3s</div>
+
+                        <!-- Q -->
+                        <div class="wire" style="left: 370px; top: 72px; width: 120px;"></div>
+                        <div class="tag-address" style="left: 410px; top: 40px;">%Q0.3</div>
+                        <div class="contact-symbol" id="tonr-q-coil" style="left: 405px; top: 72px;">--( )--</div>
+
+                        <!-- ET -->
+                        <div class="wire" style="left: 370px; top: 147px; width: 40px;"></div>
+                        <div class="tag-address" style="left: 380px; top: 127px;">%MD22</div>
+                        <div class="online-box" id="tonr-et-online" style="left: 380px; top: 151px;">T#0s</div>
+                    </div>
+                </div>
+
+                <div class="timing-diagram">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); margin-bottom: 0.5rem; padding-bottom: 0.2rem;">
+                        <h4 style="border: none; margin: 0; padding: 0;">Timing Diagram (Operation of TONR)</h4>
+                    </div>
+                    <canvas id="tonr-timing-canvas" width="800" height="250"></canvas>
+                </div>
+
+                <div class="explanation">
+                    <strong>Description:</strong> The TONR timer sets output Q to ON after a preset time delay. Elapsed time is accumulated over multiple timing periods until the R input is used to reset the elapsed time.
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="timers.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S7-1200 Bit Logic Simulator | TIA Portal</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="logo" style="display: flex; align-items: center; gap: 15px;">
+            <img src="logo.png" alt="Squarewave Logo" onerror="this.style.display='none'">
+            <div>
+                <h1>TIA PORTAL SIMULATOR</h1>
+                <p>Squarewave Automation Technologies Pvt. Ltd.</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="nav-links">
+                <a href="index.html" class="nav-link inactive">⚡ Counters</a>
+                <a href="timers.html" class="nav-link inactive">⏱ Timers</a>
+                <a href="dataops.html" class="nav-link inactive">🧮 Math & Compare</a>
+                <a href="scale.html" class="nav-link inactive">🌡 Analog Scaling</a>
+                <a href="move.html" class="nav-link inactive">🔄 Move & Shift</a>
+                <a href="bitlogic.html" class="nav-link active">🔌 Bit Logic</a>
+                <a href="advmath.html" class="nav-link inactive">📈 Adv Math</a>
+                <a href="extended_math.html" class="nav-link inactive">✖ Ext Math</a>
+                <a href="float_math.html" class="nav-link inactive">📐 Float Math</a>
+                <a href="trig_math.html" class="nav-link inactive">📐 Trig Math</a>
+                <a href="expt_frac.html" class="nav-link inactive">?? Pwr & Frac</a>
+                <a href="serialization.html" class="nav-link inactive">?? Serialize</a>
+                <a href="adv_compare.html" class="nav-link inactive">?? Adv Compare</a>
+            </div>
+            <h2>S7-1200 Bit Logic</h2>
+            <p style="font-size: 0.7rem; color: var(--text-muted);">by Antigravity</p>
+        </div>
+    </header>
+
+    <main>
+        <section class="module" id="flipflop-module">
+            <div class="module-header">
+                <h3>SR & RS Flip-Flops</h3>
+            </div>
+            <div class="instruction-description" style="padding: 10px 15px; background: rgba(0, 255, 204, 0.1); border-left: 4px solid var(--primary); margin-bottom: 15px; font-size: 0.9rem;">
+                <strong>Instruction Description:</strong> SR: Set/Reset flip-flop, reset dominant. RS: Reset/Set flip-flop, set dominant.
+            </div>
+            <div class="module-content">
+                <div class="hmi-panel">
+                    <h4>HMI Panel</h4>
+                    <div class="controls">
+                        <div class="input-group">
+                            <label>S (Set) Input</label>
+                            <button id="sr-set" class="momentary-btn" onmousedown="this.classList.add('active'); updateSR(true, null)" onmouseup="this.classList.remove('active'); updateSR(false, null)" onmouseleave="this.classList.remove('active'); updateSR(false, null)">Push S</button>
+                        </div>
+                        <div class="input-group">
+                            <label>R (Reset) Input</label>
+                            <button id="sr-reset" class="momentary-btn" onmousedown="this.classList.add('active'); updateSR(null, true)" onmouseup="this.classList.remove('active'); updateSR(null, false)" onmouseleave="this.classList.remove('active'); updateSR(null, false)">Push R</button>
+                        </div>
+                    </div>
+                    
+                    <div class="displays" style="margin-top: 15px;">
+                        <div class="display-box">
+                            <span class="label">SR Output (%Q0.0)</span>
+                            <div class="led" id="sr-led"></div>
+                        </div>
+                        <div class="display-box">
+                            <span class="label">RS Output (%Q0.1)</span>
+                            <div class="led" id="rs-led"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="logic-diagram">
+                    <div class="network-title">Network 1: Set/Reset Flip Flops</div>
+                    <div class="ladder-network" style="height: 280px;">
+                        <div class="power-rail"></div>
+
+                        <!-- SR Block -->
+                        <div class="wire" style="left: 20px; top: 72px; width: 80px;"></div>
+                        <div class="contact-symbol" id="ladder-sr-s" style="left: 40px; top: 72px;">-| |-</div>
+                        <div class="tag-address" style="left: 45px; top: 40px;">S</div>
+
+                        <div class="wire" style="left: 20px; top: 122px; width: 80px;"></div>
+                        <div class="contact-symbol" id="ladder-sr-r" style="left: 40px; top: 122px;">-| |-</div>
+                        <div class="tag-address" style="left: 45px; top: 90px;">R1</div>
+                        
+                        <div class="instruction-box" style="left: 100px; top: 40px; height: 100px; width: 80px;">
+                            <div class="box-title">SR</div>
+                            <div class="pin-label pin-left pin-y1">S</div>
+                            <div class="pin-label pin-left pin-y3">R1</div>
+                            <div class="pin-label pin-right pin-y1">Q</div>
+                        </div>
+
+                        <div class="wire" style="left: 180px; top: 72px; width: 60px;"></div>
+                        <div class="contact-symbol" id="ladder-sr-coil" style="left: 200px; top: 72px;">--( )--</div>
+                        <div class="tag-address" style="left: 210px; top: 40px;">%Q0.0</div>
+
+                        <!-- RS Block -->
+                        <div class="wire" style="left: 20px; top: 222px; width: 80px;"></div>
+                        <div class="contact-symbol" id="ladder-rs-s" style="left: 40px; top: 222px;">-| |-</div>
+                        <div class="tag-address" style="left: 45px; top: 190px;">S1</div>
+
+                        <div class="wire" style="left: 20px; top: 172px; width: 80px;"></div>
+                        <div class="contact-symbol" id="ladder-rs-r" style="left: 40px; top: 172px;">-| |-</div>
+                        <div class="tag-address" style="left: 45px; top: 140px;">R</div>
+                        
+                        <div class="instruction-box" style="left: 100px; top: 140px; height: 100px; width: 80px;">
+                            <div class="box-title">RS</div>
+                            <div class="pin-label pin-left pin-y1">R</div>
+                            <div class="pin-label pin-left pin-y3">S1</div>
+                            <div class="pin-label pin-right pin-y3">Q</div>
+                        </div>
+
+                        <div class="wire" style="left: 180px; top: 222px; width: 60px;"></div>
+                        <div class="contact-symbol" id="ladder-rs-coil" style="left: 200px; top: 222px;">--( )--</div>
+                        <div class="tag-address" style="left: 210px; top: 190px;">%Q0.1</div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="module" id="edge-module">
+            <div class="module-header">
+                <h3>Edge Detection (P & N Contacts)</h3>
+            </div>
+            <div class="instruction-description" style="padding: 10px 15px; background: rgba(0, 255, 204, 0.1); border-left: 4px solid var(--primary); margin-bottom: 15px; font-size: 0.9rem;">
+                <strong>Instruction Description:</strong> P_TRIG scans for a signal state change from 0 to 1 (Positive edge). N_TRIG scans for a signal state change from 1 to 0 (Negative edge).
+            </div>
+            <div class="module-content">
+                <div class="hmi-panel">
+                    <h4>HMI Panel</h4>
+                    <div class="controls">
+                        <div class="input-group">
+                            <label>Clock Signal (1Hz)</label>
+                            <div class="led" id="clock-led"></div>
+                        </div>
+                        <div class="input-group" style="margin-top: 15px;">
+                            <label>Manual Trigger</label>
+                            <button id="edge-trigger" class="momentary-btn" onmousedown="this.classList.add('active'); updateEdge(true)" onmouseup="this.classList.remove('active'); updateEdge(false)" onmouseleave="this.classList.remove('active'); updateEdge(false)">Push</button>
+                        </div>
+                    </div>
+                    
+                    <div class="displays" style="margin-top: 15px;">
+                        <div class="display-box">
+                            <span class="label">P_TRIG Count</span>
+                            <div class="digital-display" id="ptrig-count" style="font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; text-align: right; background: #111; color: #00ffcc; padding: 10px; border-radius: 4px; border: 1px solid var(--border);">0</div>
+                        </div>
+                        <div class="display-box">
+                            <span class="label">N_TRIG Count</span>
+                            <div class="digital-display" id="ntrig-count" style="font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; text-align: right; background: #111; color: #ff00aa; padding: 10px; border-radius: 4px; border: 1px solid var(--border);">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="logic-diagram">
+                    <div class="network-title">Network 2: Positive & Negative Edge Count</div>
+                    <div class="ladder-network" style="height: 180px;">
+                        <div class="power-rail"></div>
+
+                        <!-- P-Trig -->
+                        <div class="wire" style="left: 20px; top: 72px; width: 60px;"></div>
+                        <div class="contact-symbol" id="ladder-edge-in" style="left: 80px; top: 72px;">-| |-</div>
+                        
+                        <div class="wire" style="left: 120px; top: 72px; width: 40px;"></div>
+                        <div class="contact-symbol" id="ladder-ptrig" style="left: 160px; top: 72px;">-(P)-</div>
+                        
+                        <div class="wire" style="left: 200px; top: 72px; width: 40px;"></div>
+                        <div class="instruction-box" style="left: 240px; top: 50px; height: 50px; width: 70px;">
+                            <div class="box-title">INC</div>
+                            <div class="pin-label pin-right pin-y1" style="top:25px;">OUT</div>
+                        </div>
+                        
+                        <div class="wire" style="left: 310px; top: 72px; width: 40px;"></div>
+                        <div class="tag-address" style="left: 320px; top: 50px;">P_Cnt</div>
+
+                        <!-- N-Trig -->
+                        <div class="wire" style="left: 20px; top: 122px; width: 60px;"></div>
+                        <div class="contact-symbol" id="ladder-edge-in-n" style="left: 80px; top: 122px;">-| |-</div>
+                        
+                        <div class="wire" style="left: 120px; top: 122px; width: 40px;"></div>
+                        <div class="contact-symbol" id="ladder-ntrig" style="left: 160px; top: 122px;">-(N)-</div>
+                        
+                        <div class="wire" style="left: 200px; top: 122px; width: 40px;"></div>
+                        <div class="instruction-box" style="left: 240px; top: 100px; height: 50px; width: 70px;">
+                            <div class="box-title">INC</div>
+                            <div class="pin-label pin-right pin-y1" style="top:25px;">OUT</div>
+                        </div>
+
+                        <div class="wire" style="left: 310px; top: 122px; width: 40px;"></div>
+                        <div class="tag-address" style="left: 320px; top: 100px;">N_Cnt</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Siemens S7-1200 Instruction Simulator - Squarewave Automation Technologies</p>
+    </footer>
+
+    <script src="bitlogic.js"></script>
+</body>
+</html>
+
